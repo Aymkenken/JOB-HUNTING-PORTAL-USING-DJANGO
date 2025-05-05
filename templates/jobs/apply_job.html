@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}Apply for {{ job.title }} - JobPoint Surigao{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow">
+                <div class="card-body">
+                    <h2 class="text-center mb-4">Apply for {{ job.title }}</h2>
+                    <p class="text-center text-muted mb-4">at {{ job.company.userprofile.company_name }}</p>
+                    
+                    <form method="post" enctype="multipart/form-data" id="applicationForm">
+                        {% csrf_token %}
+                        <div class="row">
+                            <div class="col-md-12">
+                                {{ form.cover_letter|as_crispy_field }}
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="mb-3">
+                                    <label for="id_resume" class="form-label">Resume (PDF, DOC, DOCX)</label>
+                                    <input type="file" name="resume" class="form-control" id="id_resume" accept=".pdf,.doc,.docx">
+                                    <div class="form-text">Upload your resume in PDF or Word format (max 5MB)</div>
+                                    {% if form.resume.errors %}
+                                        <div class="invalid-feedback d-block">
+                                            {{ form.resume.errors }}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary" id="submitBtn">Submit Application</button>
+                            <a href="{% url 'job_detail' job.id %}" class="btn btn-outline-secondary">Cancel</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.getElementById('applicationForm').addEventListener('submit', function(e) {
+        const submitBtn = document.getElementById('submitBtn');
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Submitting...';
+    });
+</script>
+{% endblock %} 

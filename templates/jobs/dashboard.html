@@ -1,0 +1,203 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}Dashboard - JobPoint Surigao{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row mb-4">
+        <div class="col-12">
+            <h2>Welcome, {{ user.username }}</h2>
+            <p class="text-muted">Manage your account and activities</p>
+        </div>
+    </div>
+
+    {% if user_profile.user_type == 'employer' %}
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        {% if user_profile.profile_picture %}
+                            <img src="{{ user_profile.profile_picture.url }}" 
+                                 alt="Profile Picture" 
+                                 class="rounded-circle me-4" 
+                                 style="width: 100px; height: 100px; object-fit: cover;">
+                        {% else %}
+                            <div class="rounded-circle bg-light me-4" 
+                                 style="width: 100px; height: 100px; display: flex; align-items: center; justify-content: center;">
+                                <i class="bi bi-person-circle" style="font-size: 3rem; color: #6c757d;"></i>
+                            </div>
+                        {% endif %}
+                        <div>
+                            <h3 class="card-title">Your Company Profile</h3>
+                            <p class="card-text">
+                                <strong>Company Name:</strong> {{ user_profile.company_name }}<br>
+                                <strong>Position:</strong> {{ user_profile.position }}
+                            </p>
+                            <a href="{% url 'profile' %}" class="btn btn-primary">Edit Profile</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h3>Your Job Postings</h3>
+                <a href="{% url 'post_job' %}" class="btn btn-primary">Post New Job</a>
+            </div>
+            {% if posted_jobs %}
+            <div class="row">
+                {% for job in posted_jobs %}
+                <div class="col-md-6 mb-4">
+                    <div class="card job-card h-100">
+                        <div class="card-body">
+                            <h5 class="card-title">{{ job.title }}</h5>
+                            <p class="card-text">
+                                <i class="bi bi-geo-alt"></i> {{ job.location }}<br>
+                                <i class="bi bi-briefcase"></i> {{ job.get_job_type_display }}<br>
+                                <i class="bi bi-cash"></i> {{ job.salary_range }}
+                            </p>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <a href="{% url 'job_detail' job.id %}" class="btn btn-primary">View Details</a>
+                                <span class="badge bg-{{ job.is_active|yesno:'success,danger' }}">
+                                    {{ job.is_active|yesno:'Active,Inactive' }}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <div class="alert alert-info">
+                You haven't posted any jobs yet. <a href="{% url 'post_job' %}">Post your first job</a>!
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12">
+            <h3>Job Applications</h3>
+            {% if applications %}
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Job Title</th>
+                            <th>Applicant</th>
+                            <th>Date Applied</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for application in applications %}
+                        <tr>
+                            <td>{{ application.job.title }}</td>
+                            <td>{{ application.applicant.username }}</td>
+                            <td>{{ application.application_date|date:"M d, Y" }}</td>
+                            <td>
+                                <span class="application-status status-{{ application.status }}">
+                                    {{ application.get_status_display }}
+                                </span>
+                            </td>
+                            <td>
+                                <a href="{% url 'manage_application' application.id %}" class="btn btn-sm btn-primary">
+                                    Manage
+                                </a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="alert alert-info">
+                No applications received yet.
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    {% else %}
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        {% if user_profile.profile_picture %}
+                            <img src="{{ user_profile.profile_picture.url }}" 
+                                 alt="Profile Picture" 
+                                 class="rounded-circle me-4" 
+                                 style="width: 100px; height: 100px; object-fit: cover;">
+                        {% else %}
+                            <div class="rounded-circle bg-light me-4" 
+                                 style="width: 100px; height: 100px; display: flex; align-items: center; justify-content: center;">
+                                <i class="bi bi-person-circle" style="font-size: 3rem; color: #6c757d;"></i>
+                            </div>
+                        {% endif %}
+                        <div>
+                            <h3 class="card-title">Your Profile</h3>
+                            <p class="card-text">
+                                <strong>Position:</strong> {{ user_profile.position }}<br>
+                                <strong>Bio:</strong> {{ user_profile.bio|default:"No bio yet" }}
+                            </p>
+                            <a href="{% url 'profile' %}" class="btn btn-primary">Edit Profile</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12">
+            <h3>Your Applications</h3>
+            {% if applied_jobs %}
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Job Title</th>
+                            <th>Company</th>
+                            <th>Date Applied</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for application in applied_jobs %}
+                        <tr>
+                            <td>{{ application.job.title }}</td>
+                            <td>{{ application.job.company.userprofile.company_name }}</td>
+                            <td>{{ application.application_date|date:"M d, Y" }}</td>
+                            <td>
+                                <span class="application-status status-{{ application.status }}">
+                                    {{ application.get_status_display }}
+                                </span>
+                            </td>
+                            <td>
+                                <a href="{% url 'job_detail' application.job.id %}" class="btn btn-sm btn-primary">
+                                    View Job
+                                </a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="alert alert-info">
+                You haven't applied to any jobs yet. <a href="{% url 'job_list' %}">Browse available jobs</a>!
+            </div>
+            {% endif %}
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %} 
