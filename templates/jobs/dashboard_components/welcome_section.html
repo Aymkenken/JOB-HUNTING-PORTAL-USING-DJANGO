@@ -1,0 +1,32 @@
+{% if user.is_authenticated %}
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="welcome-section">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h2 class="mb-2">Welcome, {{ user.username }}</h2>
+                    <p class="mb-0" style="color: #ffffff;">Manage your account and activities</p>
+                </div>
+                <div class="quick-actions">
+                    {% if user_profile.user_type == 'employer' %}
+                        <a href="{% url 'post_job' %}" class="btn btn-light me-2">
+                            <i class="bi bi-plus-circle me-1"></i>Post New Job
+                        </a>
+                    {% else %}
+                        <a href="{% url 'job_list' %}" class="btn btn-light me-2">
+                            <i class="bi bi-search me-1"></i>Find Jobs
+                        </a>
+                    {% endif %}
+                    <a href="{% url 'profile' %}" class="btn btn-light">
+                        <i class="bi bi-person-circle me-1"></i>Edit Profile
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="alert alert-success mt-3" role="alert" style="font-size: 1.3rem; font-weight: 500;">
+    👋 Welcome, {{ user.first_name|default:user.username }}!
+</div>
+{% endif %} 

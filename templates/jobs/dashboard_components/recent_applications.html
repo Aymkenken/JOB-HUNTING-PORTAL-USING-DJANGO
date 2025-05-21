@@ -1,0 +1,69 @@
+<!-- Recent Applications Section -->
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header bg-white">
+                <h3 class="card-title mb-0">Recent Applications</h3>
+            </div>
+            <div class="card-body">
+                {% if applications %}
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Job Title</th>
+                                <th>Applicant</th>
+                                <th>Date Applied</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for application in applications %}
+                            <tr>
+                                <td>{{ application.job.title }}</td>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        {% if application.applicant.userprofile.profile_picture %}
+                                            <img src="{{ application.applicant.userprofile.profile_picture.url }}" 
+                                                 alt="Applicant" 
+                                                 class="rounded-circle me-2" 
+                                                 style="width: 32px; height: 32px; object-fit: cover;">
+                                        {% else %}
+                                            <div class="rounded-circle bg-light me-2" 
+                                                 style="width: 32px; height: 32px; display: flex; align-items: center; justify-content: center;">
+                                                <i class="bi bi-person" style="font-size: 1rem; color: #6c757d;"></i>
+                                            </div>
+                                        {% endif %}
+                                        {{ application.applicant.username }}
+                                    </div>
+                                </td>
+                                <td>{{ application.application_date|date:"M d, Y" }}</td>
+                                <td>
+                                    <span class="application-status status-{{ application.status }}">
+                                        {{ application.get_status_display }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <a href="{% url 'manage_application' application.id %}" class="btn btn-sm btn-primary">
+                                        <i class="bi bi-eye me-1"></i>View
+                                    </a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="text-center py-4">
+                    <i class="bi bi-inbox" style="font-size: 3rem; color: #6c757d;"></i>
+                    <p class="mt-3 text-muted">No applications received yet.</p>
+                    <a href="{% url 'post_job' %}" class="btn btn-primary">
+                        <i class="bi bi-plus-circle me-1"></i>Post a Job
+                    </a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div> 

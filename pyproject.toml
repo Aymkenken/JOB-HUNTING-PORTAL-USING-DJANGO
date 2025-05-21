@@ -1,0 +1,66 @@
+[tool.black]
+line-length = 88
+target-version = ['py38']
+include = '\.pyi?$'
+
+[tool.isort]
+profile = "black"
+multi_line_output = 3
+include_trailing_comma = true
+force_grid_wrap = 0
+use_parentheses = true
+line_length = 88
+
+[tool.mypy]
+python_version = "3.8"
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = true
+disallow_incomplete_defs = true
+check_untyped_defs = true
+disallow_untyped_decorators = true
+no_implicit_optional = true
+warn_redundant_casts = true
+warn_unused_ignores = true
+warn_no_return = true
+warn_unreachable = true
+
+[[tool.mypy.overrides]]
+module = [
+    "django.*",
+    "django.contrib.*",
+    "django.db.*",
+    "django.http.*",
+    "django.template.*",
+    "django.utils.*",
+]
+ignore_missing_imports = true
+
+[tool.pytest.ini_options]
+DJANGO_SETTINGS_MODULE = "jobportal.settings"
+python_files = ["test_*.py", "*_test.py"]
+addopts = "-v --cov=jobs --cov-report=term-missing"
+testpaths = ["jobs/tests"]
+
+[tool.coverage.run]
+source = ["jobs"]
+omit = [
+    "jobs/tests/*",
+    "jobs/migrations/*",
+    "jobs/__init__.py",
+]
+
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: no cover",
+    "def __repr__",
+    "if self.debug:",
+    "raise NotImplementedError",
+    "if __name__ == .__main__.:",
+    "pass",
+    "raise ImportError",
+]
+
+[tool.bandit]
+exclude_dirs = ["tests", "venv", "migrations"]
+skips = ["B101"]  # Skip assert warnings in tests 

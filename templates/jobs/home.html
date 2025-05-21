@@ -1,105 +1,225 @@
 {% extends 'base.html' %}
-{% load crispy_forms_tags %}
+{% load static %}
 
-{% block title %}Home - JobPoint Surigao{% endblock %}
+{% block title %}Welcome to JobPoint Surigao{% endblock %}
 
 {% block content %}
-<section class="hero-bg">
+<!-- Hero Section -->
+<div class="hero-section">
+    <div class="hero-overlay"></div>
     <div class="container">
-        <div class="hero-content">
-            <h1 class="hero-title">Find Your Dream Job in Surigao</h1>
-            <p class="hero-subtitle">Connect with top employers and discover exciting career opportunities in Surigao City and surrounding areas.</p>
-            <div class="cta-buttons">
-                <a href="{% url 'register' %}" class="cta-button cta-button-primary">Get Started</a>
-                <a href="{% url 'login' %}" class="cta-button cta-button-outline">Login</a>
+        <div class="row min-vh-100 align-items-center">
+            <div class="col-lg-8 mx-auto text-center text-white">
+                <h1 class="display-4 fw-bold mb-4">Find Your Dream Job in Surigao</h1>
+                <p class="lead mb-5">Connect with top employers and discover opportunities that match your skills and aspirations.</p>
+                <div class="d-flex justify-content-center gap-3">
+                    <a href="{% url 'register_choice' %}" class="btn btn-primary btn-lg px-5">Get Started</a>
+                    <a href="{% url 'job_list' %}" class="btn btn-outline-light btn-lg px-5">Browse Jobs</a>
+                </div>
             </div>
         </div>
     </div>
-</section>
+</div>
 
-<section class="feature-section">
+<!-- Stats Section -->
+<div class="stats-section py-5">
     <div class="container">
-        <div class="row mb-5">
-            <div class="col-12 text-center">
-                <h2 class="display-4 mb-4">Why Choose JobPoint Surigao?</h2>
-                <p class="lead text-muted">We make job hunting and recruitment simple and effective</p>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-md-4 mb-4">
-                <div class="feature-box">
-                    <i class="bi bi-search icon"></i>
-                    <h3>Find Jobs</h3>
-                    <p>Browse through hundreds of job opportunities in Surigao City and surrounding areas.</p>
-                    <a href="{% url 'job_list' %}" class="btn btn-primary">Browse Jobs</a>
+        <div class="row g-4">
+            <div class="col-md-3">
+                <div class="stat-card text-center p-4">
+                    <div class="stat-icon mb-3">
+                        <i class="bi bi-briefcase"></i>
+                    </div>
+                    <h3 class="stat-number">{{ active_jobs }}</h3>
+                    <p class="stat-label">Active Jobs</p>
                 </div>
             </div>
-            <div class="col-md-4 mb-4">
-                <div class="feature-box">
-                    <i class="bi bi-building icon"></i>
-                    <h3>Post Jobs</h3>
-                    <p>Employers can easily post job openings and find qualified candidates.</p>
-                    <a href="{% url 'post_job' %}" class="btn btn-primary">Post a Job</a>
+            <div class="col-md-3">
+                <div class="stat-card text-center p-4">
+                    <div class="stat-icon mb-3">
+                        <i class="bi bi-building"></i>
+                    </div>
+                    <h3 class="stat-number">{{ companies }}</h3>
+                    <p class="stat-label">Companies</p>
                 </div>
             </div>
-            <div class="col-md-4 mb-4">
-                <div class="feature-box">
-                    <i class="bi bi-people icon"></i>
-                    <h3>Connect</h3>
-                    <p>Connect with potential employers or job seekers in your area.</p>
-                    <a href="{% url 'register' %}" class="btn btn-primary">Get Started</a>
+            <div class="col-md-3">
+                <div class="stat-card text-center p-4">
+                    <div class="stat-icon mb-3">
+                        <i class="bi bi-people"></i>
+                    </div>
+                    <h3 class="stat-number">{{ job_seekers }}</h3>
+                    <p class="stat-label">Job Seekers</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-card text-center p-4">
+                    <div class="stat-icon mb-3">
+                        <i class="bi bi-graph-up"></i>
+                    </div>
+                    <h3 class="stat-number">{{ success_rate }}%</h3>
+                    <p class="stat-label">Success Rate</p>
                 </div>
             </div>
         </div>
     </div>
-</section>
+</div>
 
-<section class="stats-section">
+<!-- Features Section -->
+<div class="features-section py-5 bg-light">
     <div class="container">
-        <div class="row">
-            <div class="col-md-3 mb-4">
-                <div class="stat-item">
-                    <div class="stat-number">500+</div>
-                    <div class="stat-label">Active Jobs</div>
+        <h2 class="text-center mb-5">Why Choose JobPoint Surigao?</h2>
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="feature-card text-center p-4">
+                    <div class="feature-icon mb-3">
+                        <i class="bi bi-search"></i>
+                    </div>
+                    <h4>Smart Job Search</h4>
+                    <p>Find jobs that match your skills and preferences with our advanced search system.</p>
                 </div>
             </div>
-            <div class="col-md-3 mb-4">
-                <div class="stat-item">
-                    <div class="stat-number">100+</div>
-                    <div class="stat-label">Companies</div>
+            <div class="col-md-4">
+                <div class="feature-card text-center p-4">
+                    <div class="feature-icon mb-3">
+                        <i class="bi bi-shield-check"></i>
+                    </div>
+                    <h4>Verified Employers</h4>
+                    <p>Connect with trusted companies and verified job opportunities.</p>
                 </div>
             </div>
-            <div class="col-md-3 mb-4">
-                <div class="stat-item">
-                    <div class="stat-number">1000+</div>
-                    <div class="stat-label">Job Seekers</div>
-                </div>
-            </div>
-            <div class="col-md-3 mb-4">
-                <div class="stat-item">
-                    <div class="stat-number">80%</div>
-                    <div class="stat-label">Success Rate</div>
+            <div class="col-md-4">
+                <div class="feature-card text-center p-4">
+                    <div class="feature-icon mb-3">
+                        <i class="bi bi-chat-dots"></i>
+                    </div>
+                    <h4>Direct Communication</h4>
+                    <p>Communicate directly with employers and track your application status.</p>
                 </div>
             </div>
         </div>
     </div>
-</section>
+</div>
 
-<section class="py-5">
+<!-- CTA Section -->
+<div class="cta-section py-5">
     <div class="container">
-        <div class="row align-items-center">
-            <div class="col-md-6">
-                <h2 class="display-5 mb-4">Ready to Start Your Journey?</h2>
-                <p class="lead mb-4">Join JobPoint Surigao today and take the first step towards your dream career or find the perfect candidate for your company.</p>
-                <div class="d-flex gap-3 mb-4">
-                    <a href="{% url 'register' %}" class="btn btn-primary btn-lg">Create Account</a>
-                    <a href="{% url 'login' %}" class="btn btn-outline-primary btn-lg">Login</a>
+        <div class="row justify-content-center">
+            <div class="col-lg-8 text-center">
+                <h2 class="mb-4">Ready to Start Your Career Journey?</h2>
+                <p class="lead mb-4">Join thousands of job seekers and employers in Surigao's leading job platform.</p>
+                <div class="d-flex justify-content-center gap-3">
+                    <a href="{% url 'register_choice' %}" class="btn btn-primary btn-lg">Create Account</a>
+                    <a href="{% url 'login' %}" class="btn btn-outline-primary btn-lg">Sign In</a>
                 </div>
-            </div>
-            <div class="col-md-6">
-                <img src="https://images.unsplash.com/photo-1573497620053-ea5300f94f21?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80" alt="Job Search" class="img-fluid rounded shadow">
             </div>
         </div>
     </div>
-</section>
+</div>
+
+<style>
+    /* Hero Section */
+    .hero-section {
+        position: relative;
+        background: url('https://images.unsplash.com/photo-1521791136064-7986c2920216?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80') center/cover no-repeat;
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+    }
+
+    .hero-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.6);
+    }
+
+    .hero-section .container {
+        position: relative;
+        z-index: 1;
+    }
+
+    /* Stats Section */
+    .stat-card {
+        background: white;
+        border-radius: 10px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        transition: transform 0.3s ease;
+    }
+
+    .stat-card:hover {
+        transform: translateY(-5px);
+    }
+
+    .stat-icon {
+        font-size: 2.5rem;
+        color: #0d6efd;
+    }
+
+    .stat-number {
+        font-size: 2rem;
+        font-weight: bold;
+        color: #212529;
+        margin-bottom: 0.5rem;
+    }
+
+    .stat-label {
+        color: #6c757d;
+        margin-bottom: 0;
+    }
+
+    /* Features Section */
+    .feature-card {
+        background: white;
+        border-radius: 10px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        transition: transform 0.3s ease;
+    }
+
+    .feature-card:hover {
+        transform: translateY(-5px);
+    }
+
+    .feature-icon {
+        font-size: 2.5rem;
+        color: #0d6efd;
+    }
+
+    .feature-card h4 {
+        color: #212529;
+        margin-bottom: 1rem;
+    }
+
+    .feature-card p {
+        color: #6c757d;
+        margin-bottom: 0;
+    }
+
+    /* CTA Section */
+    .cta-section {
+        background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+        .hero-section {
+            min-height: 80vh;
+        }
+
+        .hero-section h1 {
+            font-size: 2.5rem;
+        }
+
+        .stat-card, .feature-card {
+            margin-bottom: 1rem;
+        }
+
+        .btn-lg {
+            padding: 0.5rem 1rem;
+            font-size: 1rem;
+        }
+    }
+</style>
 {% endblock %} 

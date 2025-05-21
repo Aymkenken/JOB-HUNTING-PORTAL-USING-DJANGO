@@ -1,0 +1,181 @@
+{% extends 'base.html' %}
+
+{% block title %}Applications for {{ job.title }}{% endblock %}
+
+{% block content %}
+{% csrf_token %}
+<div class="container py-4">
+    <div class="row">
+        <div class="col-12">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-gradient-primary text-white">
+                    <h3 class="card-title mb-0">
+                        <i class="bi bi-people-fill me-2"></i>
+                        Applications for {{ job.title }}
+                    </h3>
+                </div>
+                <div class="card-body">
+                    {% if applications %}
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle">
+                            <thead class="table-light">
+                                <tr>
+                                    <th class="border-0">Applicant</th>
+                                    <th class="border-0">Applied Date</th>
+                                    <th class="border-0">Status</th>
+                                    <th class="border-0">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for application in applications %}
+                                <tr>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            {% if application.applicant.userprofile.profile_picture %}
+                                                <img src="{{ application.applicant.userprofile.profile_picture.url }}" 
+                                                     alt="Applicant" 
+                                                     class="rounded-circle me-2 shadow-sm" 
+                                                     style="width: 40px; height: 40px; object-fit: cover;">
+                                            {% else %}
+                                                <div class="rounded-circle bg-light me-2 shadow-sm d-flex align-items-center justify-content-center" 
+                                                     style="width: 40px; height: 40px;">
+                                                    <i class="bi bi-person-fill" style="font-size: 1.2rem; color: #6c757d;"></i>
+                                                </div>
+                                            {% endif %}
+                                            <div>
+                                                <h6 class="mb-0">{{ application.applicant.get_full_name|default:application.applicant.username }}</h6>
+                                                <small class="text-muted">{{ application.applicant.email }}</small>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <span class="text-muted">
+                                            <i class="bi bi-calendar3 me-1"></i>
+                                            {{ application.application_date|date:"M d, Y" }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <span class="badge rounded-pill {% if application.status == 'pending' %}bg-warning text-dark{% elif application.status == 'accepted' %}bg-success{% elif application.status == 'rejected' %}bg-danger{% else %}bg-info text-dark{% endif %} shadow-sm">
+                                            <i class="bi {% if application.status == 'pending' %}bi-clock{% elif application.status == 'accepted' %}bi-check-circle{% elif application.status == 'rejected' %}bi-x-circle{% else %}bi-info-circle{% endif %} me-1"></i>
+                                            {{ application.get_status_display }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <div class="btn-group shadow-sm">
+                                            <a href="{% url 'view_application' application.id %}" class="btn btn-sm btn-outline-primary">
+                                                <i class="bi bi-eye"></i> View
+                                            </a>
+                                            {% if application.status == 'pending' %}
+                                            <button type="button" class="btn btn-sm btn-outline-success" onclick="updateStatus('{{ application.id }}', 'accepted')">
+                                                <i class="bi bi-check-circle"></i> Accept
+                                            </button>
+                                            <button type="button" class="btn btn-sm btn-outline-danger" onclick="updateStatus('{{ application.id }}', 'rejected')">
+                                                <i class="bi bi-x-circle"></i> Reject
+                                            </button>
+                                            {% endif %}
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <div class="text-center py-5">
+                        <div class="mb-3">
+                            <i class="bi bi-people" style="font-size: 4rem; color: #6c757d;"></i>
+                        </div>
+                        <h5 class="text-muted mb-3">No Applications Yet</h5>
+                        <p class="text-muted mb-0">When applicants apply for this job, they will appear here.</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.bg-gradient-primary {
+    background: linear-gradient(45deg, #4e73df, #224abe);
+}
+
+.table > :not(caption) > * > * {
+    padding: 1rem;
+}
+
+.btn-group .btn {
+    border-radius: 0.25rem !important;
+    margin: 0 2px;
+}
+
+.btn-group .btn:first-child {
+    margin-left: 0;
+}
+
+.btn-group .btn:last-child {
+    margin-right: 0;
+}
+
+.alert {
+    border: none;
+    border-radius: 0.5rem;
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+}
+</style>
+
+<script>
+function updateStatus(applicationId, status) {
+    if (confirm('Are you sure you want to ' + status + ' this application?')) {
+        const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+        
+        fetch(`/jobs/application/${applicationId}/update-status/`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': csrfToken
+            },
+            body: JSON.stringify({ status: status })
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
+        .then(data => {
+            if (data.success) {
+                // Show success message
+                const alertDiv = document.createElement('div');
+                alertDiv.className = 'alert alert-success alert-dismissible fade show';
+                alertDiv.innerHTML = `
+                    <i class="bi bi-check-circle-fill me-2"></i>
+                    Application status updated successfully!
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                `;
+                document.querySelector('.card-body').insertBefore(alertDiv, document.querySelector('.card-body').firstChild);
+                
+                // Reload after a short delay
+                setTimeout(() => {
+                    window.location.reload();
+                }, 1500);
+            } else {
+                throw new Error(data.message || 'Failed to update status');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            // Show error message
+            const alertDiv = document.createElement('div');
+            alertDiv.className = 'alert alert-danger alert-dismissible fade show';
+            alertDiv.innerHTML = `
+                <i class="bi bi-exclamation-circle-fill me-2"></i>
+                Error updating application status: ${error.message}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            `;
+            document.querySelector('.card-body').insertBefore(alertDiv, document.querySelector('.card-body').firstChild);
+        });
+    }
+}
+</script>
+{% endblock %} 

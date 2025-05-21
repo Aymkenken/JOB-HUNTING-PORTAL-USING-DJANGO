@@ -1,145 +1,324 @@
 {% extends 'base.html' %}
 {% load crispy_forms_tags %}
+{% load static %}
 
-{% block title %}Post a Job - JobPoint Surigao{% endblock %}
+{% block title %}Post a New Job - JobPoint Surigao{% endblock %}
+
+{% block extra_css %}
+<style>
+    :root {
+        --primary-color: #4e73df;
+        --primary-light: #224abe;
+        --primary-dark: #1a3a8f;
+        --success-color: #2ecc71;
+        --success-light: #27ae60;
+        --warning-color: #f1c40f;
+        --warning-light: #f39c12;
+        --info-color: #3498db;
+        --info-light: #2980b9;
+        --bg-gradient-start: #f8f9ff;
+        --bg-gradient-end: #eef2ff;
+        --card-bg: #ffffff;
+        --card-hover: #f8f9ff;
+        --text-primary: #2d3748;
+        --text-secondary: #4a5568;
+        --border-color: #e2e8f0;
+    }
+
+    body {
+        background: linear-gradient(135deg, var(--bg-gradient-start) 0%, var(--bg-gradient-end) 100%);
+        min-height: 100vh;
+        color: var(--text-primary);
+    }
+
+    .post-job-container {
+        padding: 2rem 0;
+    }
+
+    .card {
+        background: var(--card-bg);
+        border: 1px solid var(--border-color);
+        border-radius: 1rem;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+        transition: all 0.3s ease;
+    }
+
+    .card:hover {
+        transform: translateY(-5px);
+        background: var(--card-hover);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+    }
+
+    .section {
+        background: var(--card-bg);
+        border-radius: 1rem;
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+        border: 1px solid var(--border-color);
+    }
+
+    .section-title {
+        color: var(--text-primary);
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .section-title i {
+        color: var(--primary-color);
+    }
+
+    .btn {
+        padding: 0.75rem 1.5rem;
+        font-weight: 500;
+        border-radius: 0.75rem;
+        transition: all 0.3s ease;
+    }
+
+    .btn-primary {
+        background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+        border: none;
+        color: white;
+    }
+
+    .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 15px rgba(78, 115, 223, 0.3);
+        color: white;
+    }
+
+    .progress {
+        height: 0.5rem;
+        border-radius: 1rem;
+        background-color: var(--border-color);
+        margin-bottom: 2rem;
+    }
+
+    .progress-bar {
+        background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+        border-radius: 1rem;
+    }
+
+    .form-label {
+        color: var(--text-primary);
+        font-weight: 500;
+    }
+
+    .form-control {
+        border: 1px solid var(--border-color);
+        border-radius: 0.75rem;
+        padding: 0.75rem 1rem;
+        transition: all 0.3s ease;
+    }
+
+    .form-control:focus {
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 0.2rem rgba(78, 115, 223, 0.25);
+    }
+
+    .form-text {
+        color: var(--text-secondary);
+    }
+
+    .alert {
+        border-radius: 1rem;
+        padding: 1rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .alert-danger {
+        background-color: rgba(220, 53, 69, 0.1);
+        border-color: rgba(220, 53, 69, 0.2);
+        color: #dc3545;
+    }
+
+    .alert-success {
+        background-color: rgba(46, 204, 113, 0.1);
+        border-color: rgba(46, 204, 113, 0.2);
+        color: var(--success-color);
+    }
+
+    @media (max-width: 768px) {
+        .post-job-container {
+            padding: 1rem;
+        }
+
+        .section {
+            padding: 1rem;
+        }
+    }
+</style>
+{% endblock %}
 
 {% block content %}
-<div class="container mt-5">
-    <div class="row justify-content-center">
-        <div class="col-md-8">
-            <div class="card shadow">
-                <div class="card-body">
-                    <h2 class="text-center mb-4">Post a New Job</h2>
-                    <form method="post" enctype="multipart/form-data">
-                        {% csrf_token %}
-                        <div class="row">
-                            <div class="col-md-12">
-                                {{ form.title|as_crispy_field }}
-                            </div>
+<div class="post-job-container">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-10">
+                <div class="card">
+                    <div class="card-body p-4">
+                        <h2 class="text-center mb-4">Post a New Job</h2>
+                        
+                        <!-- Progress Bar -->
+                        <div class="progress mb-4">
+                            <div class="progress-bar" role="progressbar" style="width: 0%" id="formProgress"></div>
                         </div>
-                        <div class="row">
-                            <div class="col-md-6">
-                                {{ form.country|as_crispy_field }}
+
+                        {% if messages %}
+                            {% for message in messages %}
+                                <div class="alert alert-{{ message.tags }}">
+                                    {{ message }}
+                                </div>
+                            {% endfor %}
+                        {% endif %}
+
+                        <form method="post" id="jobForm">
+                            {% csrf_token %}
+                            
+                            <!-- Basic Information -->
+                            <div class="section mb-4">
+                                <h5 class="section-title mb-3">
+                                    <i class="bi bi-info-circle"></i>Basic Information
+                                </h5>
+                                <div class="row g-3">
+                                    <div class="col-md-12">
+                                        {{ form.title|as_crispy_field }}
+                                    </div>
+                                    <div class="col-md-12">
+                                        {{ form.company_name|as_crispy_field }}
+                                    </div>
+                                    <div class="col-md-6">
+                                        {{ form.job_type|as_crispy_field }}
+                                    </div>
+                                    <div class="col-md-6">
+                                        {{ form.currency|as_crispy_field }}
+                                    </div>
+                                    <div class="col-md-6">
+                                        {{ form.min_salary|as_crispy_field }}
+                                    </div>
+                                    <div class="col-md-6">
+                                        {{ form.max_salary|as_crispy_field }}
+                                    </div>
+                                </div>
                             </div>
-                            <div class="col-md-6">
-                                {{ form.province|as_crispy_field }}
+
+                            <!-- Location Information -->
+                            <div class="section mb-4">
+                                <h5 class="section-title mb-3">
+                                    <i class="bi bi-geo-alt"></i>Location
+                                </h5>
+                                <div class="row g-3">
+                                    <div class="col-md-6">
+                                        {{ form.country|as_crispy_field }}
+                                    </div>
+                                    <div class="col-md-6">
+                                        {{ form.province|as_crispy_field }}
+                                    </div>
+                                    <div class="col-md-6">
+                                        {{ form.city|as_crispy_field }}
+                                    </div>
+                                    <div class="col-md-6">
+                                        {{ form.barangay|as_crispy_field }}
+                                    </div>
+                                </div>
                             </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-6">
-                                {{ form.city|as_crispy_field }}
+
+                            <!-- Work Schedule -->
+                            <div class="section mb-4">
+                                <h5 class="section-title mb-3">
+                                    <i class="bi bi-calendar3"></i>Work Schedule
+                                </h5>
+                                <div class="row g-3">
+                                    <div class="col-md-12">
+                                        {{ form.work_days|as_crispy_field }}
+                                    </div>
+                                    <div class="col-md-6">
+                                        {{ form.work_start_time|as_crispy_field }}
+                                    </div>
+                                    <div class="col-md-6">
+                                        {{ form.work_end_time|as_crispy_field }}
+                                    </div>
+                                </div>
                             </div>
-                            <div class="col-md-6">
-                                {{ form.barangay|as_crispy_field }}
+
+                            <!-- Job Description -->
+                            <div class="section mb-4">
+                                <h5 class="section-title mb-3">
+                                    <i class="bi bi-file-text"></i>Job Description
+                                </h5>
+                                <div class="row g-3">
+                                    <div class="col-12">
+                                        {{ form.description|as_crispy_field }}
+                                    </div>
+                                </div>
                             </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-6">
-                                {{ form.job_type|as_crispy_field }}
+
+                            <!-- Requirements -->
+                            <div class="section mb-4">
+                                <h5 class="section-title mb-3">
+                                    <i class="bi bi-list-check"></i>Requirements
+                                </h5>
+                                <div class="row g-3">
+                                    <div class="col-12">
+                                        {{ form.requirements|as_crispy_field }}
+                                    </div>
+                                </div>
                             </div>
-                            <div class="col-md-6">
-                                {{ form.salary_range|as_crispy_field }}
+
+                            <!-- Additional Information -->
+                            <div class="section mb-4">
+                                <h5 class="section-title mb-3">
+                                    <i class="bi bi-calendar-check"></i>Additional Information
+                                </h5>
+                                <div class="row g-3">
+                                    <div class="col-md-12">
+                                        {{ form.deadline|as_crispy_field }}
+                                    </div>
+                                </div>
                             </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-12">
-                                {{ form.description|as_crispy_field }}
+
+                            <div class="text-center mt-4">
+                                <button type="submit" class="btn btn-primary btn-lg">
+                                    <i class="bi bi-check-circle me-2"></i>Post Job
+                                </button>
                             </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-12">
-                                {{ form.requirements|as_crispy_field }}
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-12">
-                                {{ form.deadline|as_crispy_field }}
-                            </div>
-                        </div>
-                        <div class="d-grid gap-2">
-                            <button type="submit" class="btn btn-primary">Post Job</button>
-                        </div>
-                    </form>
+                        </form>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
+{% endblock %}
 
 {% block extra_js %}
 <script>
-    $(document).ready(function() {
-        // Handle country change
-        $("#id_country").change(function() {
-            var countryId = $(this).val();
-            if (countryId) {
-                $.ajax({
-                    url: "{% url 'ajax_load_provinces' %}",
-                    data: {
-                        'country_id': countryId
-                    },
-                    success: function(data) {
-                        $("#id_province").html('<option value="">---------</option>');
-                        $.each(data, function(i, item) {
-                            $("#id_province").append(`<option value="${item.id}">${item.name}</option>`);
-                        });
-                        // Clear city and barangay dropdowns
-                        $("#id_city").html('<option value="">---------</option>');
-                        $("#id_barangay").html('<option value="">---------</option>');
-                    }
-                });
-            } else {
-                $("#id_province").html('<option value="">---------</option>');
-                $("#id_city").html('<option value="">---------</option>');
-                $("#id_barangay").html('<option value="">---------</option>');
-            }
+    document.addEventListener('DOMContentLoaded', function() {
+        const form = document.getElementById('jobForm');
+        const progressBar = document.getElementById('formProgress');
+        const requiredFields = form.querySelectorAll('[required]');
+        const totalFields = requiredFields.length;
+        let filledFields = 0;
+
+        function updateProgress() {
+            filledFields = 0;
+            requiredFields.forEach(field => {
+                if (field.value.trim() !== '') {
+                    filledFields++;
+                }
+            });
+            const progress = (filledFields / totalFields) * 100;
+            progressBar.style.width = progress + '%';
+        }
+
+        requiredFields.forEach(field => {
+            field.addEventListener('input', updateProgress);
+            field.addEventListener('change', updateProgress);
         });
 
-        // Handle province change
-        $("#id_province").change(function() {
-            var provinceId = $(this).val();
-            if (provinceId) {
-                $.ajax({
-                    url: "{% url 'ajax_load_cities' %}",
-                    data: {
-                        'province_id': provinceId
-                    },
-                    success: function(data) {
-                        $("#id_city").html('<option value="">---------</option>');
-                        $.each(data, function(i, item) {
-                            $("#id_city").append(`<option value="${item.id}">${item.name}</option>`);
-                        });
-                        // Clear barangay dropdown
-                        $("#id_barangay").html('<option value="">---------</option>');
-                    }
-                });
-            } else {
-                $("#id_city").html('<option value="">---------</option>');
-                $("#id_barangay").html('<option value="">---------</option>');
-            }
-        });
-
-        // Handle city change
-        $("#id_city").change(function() {
-            var cityId = $(this).val();
-            if (cityId) {
-                $.ajax({
-                    url: "{% url 'ajax_load_barangays' %}",
-                    data: {
-                        'city_id': cityId
-                    },
-                    success: function(data) {
-                        $("#id_barangay").html('<option value="">---------</option>');
-                        $.each(data, function(i, item) {
-                            $("#id_barangay").append(`<option value="${item.id}">${item.name}</option>`);
-                        });
-                    }
-                });
-            } else {
-                $("#id_barangay").html('<option value="">---------</option>');
-            }
-        });
+        // Initial progress check
+        updateProgress();
     });
 </script>
-{% endblock %}
 {% endblock %} 

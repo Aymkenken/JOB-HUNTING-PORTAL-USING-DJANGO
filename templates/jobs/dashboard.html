@@ -1,203 +1,1144 @@
 {% extends 'base.html' %}
-{% load crispy_forms_tags %}
+{% load static %}
 
 {% block title %}Dashboard - JobPoint Surigao{% endblock %}
 
+{% block extra_css %}
+<style>
+    :root {
+        --primary-color: #4e73df;
+        --primary-light: #224abe;
+        --primary-dark: #1a3a8f;
+        --success-color: #2ecc71;
+        --success-light: #27ae60;
+        --warning-color: #f1c40f;
+        --warning-light: #f39c12;
+        --info-color: #3498db;
+        --info-light: #2980b9;
+        --bg-gradient-start: #f8f9ff;
+        --bg-gradient-end: #eef2ff;
+        --card-bg: #ffffff;
+        --card-hover: #f8f9ff;
+        --text-primary: #2d3748;
+        --text-secondary: #4a5568;
+        --border-color: #e2e8f0;
+    }
+
+    body {
+        background: linear-gradient(135deg, var(--bg-gradient-start) 0%, var(--bg-gradient-end) 100%);
+        min-height: 100vh;
+        color: var(--text-primary);
+    }
+
+    .dashboard-container {
+        padding: 2rem 0;
+    }
+
+    .dashboard-header {
+        background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+        border-radius: 1.5rem;
+        padding: 2.5rem;
+        color: white;
+        margin-bottom: 2rem;
+        box-shadow: 0 4px 20px rgba(78, 115, 223, 0.15);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .header-pattern {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M11 18c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm48 25c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm-43-7c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm63 31c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM34 90c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm56-76c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM12 86c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm28-65c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm23-11c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-6 60c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm29 22c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zM32 63c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm57-13c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-9-21c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM60 91c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM35 41c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM12 60c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2z' fill='%23ffffff' fill-opacity='0.05' fill-rule='evenodd'/%3E%3C/svg%3E");
+        opacity: 0.3;
+        pointer-events: none;
+        z-index: 1;
+    }
+
+    .header-content {
+        position: relative;
+        z-index: 2;
+        background: rgba(0, 0, 0, 0.1);
+        padding: 1rem;
+        border-radius: 1rem;
+        backdrop-filter: blur(5px);
+    }
+
+    .header-buttons {
+        position: relative;
+        z-index: 2;
+        background: rgba(0, 0, 0, 0.1);
+        padding: 1rem;
+        border-radius: 1rem;
+        backdrop-filter: blur(5px);
+    }
+
+    .header-buttons .btn {
+        background: rgba(255, 255, 255, 0.15);
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        color: white;
+        backdrop-filter: blur(5px);
+        transition: all 0.3s ease;
+    }
+
+    .header-buttons .btn:hover {
+        background: rgba(255, 255, 255, 0.25);
+        border-color: rgba(255, 255, 255, 0.4);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    }
+
+    .header-buttons .btn i {
+        color: rgba(255, 255, 255, 0.9);
+    }
+
+    .header-buttons .btn-success {
+        background: rgba(46, 204, 113, 0.2);
+        border-color: rgba(46, 204, 113, 0.4);
+    }
+
+    .header-buttons .btn-success:hover {
+        background: rgba(46, 204, 113, 0.3);
+        border-color: rgba(46, 204, 113, 0.5);
+    }
+
+    .header-buttons .btn-primary {
+        background: rgba(78, 115, 223, 0.2);
+        border-color: rgba(78, 115, 223, 0.4);
+    }
+
+    .header-buttons .btn-primary:hover {
+        background: rgba(78, 115, 223, 0.3);
+        border-color: rgba(78, 115, 223, 0.5);
+    }
+
+    .header-content h2 {
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        margin-bottom: 0.5rem;
+    }
+
+    .header-content p {
+        text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+        opacity: 0.9;
+    }
+
+    .card {
+        background: var(--card-bg);
+        border: 1px solid var(--border-color);
+        border-radius: 1rem;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+        transition: all 0.3s ease;
+        overflow: hidden;
+    }
+
+    .card:hover {
+        transform: translateY(-5px);
+        background: var(--card-hover);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+    }
+
+    .card-header {
+        background: var(--card-bg);
+        border-bottom: 1px solid var(--border-color);
+        padding: 1.5rem;
+    }
+
+    .card-title {
+        color: var(--text-primary);
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .card-title i {
+        color: var(--primary-color);
+    }
+
+    .stat-card {
+        background: var(--card-bg);
+        border-radius: 1rem;
+        padding: 1.5rem;
+        position: relative;
+        overflow: hidden;
+        border: 1px solid var(--border-color);
+        transition: all 0.3s ease;
+    }
+
+    .stat-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+    }
+
+    .stat-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 4px;
+        background: linear-gradient(90deg, var(--card-color) 0%, var(--card-color-light) 100%);
+    }
+
+    .stat-icon {
+        width: 48px;
+        height: 48px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        background: var(--card-bg);
+        color: var(--card-color);
+        margin-bottom: 1rem;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+    }
+
+    .stat-value {
+        font-size: 2rem;
+        font-weight: 700;
+        color: var(--text-primary);
+        margin-bottom: 0.5rem;
+    }
+
+    .stat-label {
+        font-size: 0.875rem;
+        color: var(--text-secondary);
+        font-weight: 500;
+    }
+
+    .btn {
+        padding: 0.75rem 1.5rem;
+        font-weight: 500;
+        border-radius: 0.75rem;
+        transition: all 0.3s ease;
+        position: relative;
+        z-index: 2;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .btn-primary {
+        background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+        border: none;
+        color: white;
+    }
+
+    .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 15px rgba(78, 115, 223, 0.3);
+        color: white;
+    }
+
+    .btn-outline-primary {
+        border: 2px solid var(--primary-color);
+        color: var(--primary-color);
+        background: transparent;
+    }
+
+    .btn-outline-primary:hover {
+        background: var(--primary-color);
+        border-color: var(--primary-color);
+        color: white;
+        transform: translateY(-2px);
+    }
+
+    .btn-outline-secondary {
+        border: 2px solid var(--text-secondary);
+        color: var(--text-secondary);
+        background: transparent;
+    }
+
+    .btn-outline-secondary:hover {
+        background: var(--text-secondary);
+        border-color: var(--text-secondary);
+        color: white;
+        transform: translateY(-2px);
+    }
+
+    .table {
+        color: var(--text-primary);
+        margin-bottom: 0;
+    }
+
+    .table th {
+        font-weight: 600;
+        color: var(--primary-color);
+        border-bottom: 2px solid var(--border-color);
+        padding: 1rem;
+        background: rgba(78, 115, 223, 0.05);
+    }
+
+    .table td {
+        padding: 1rem;
+        vertical-align: middle;
+        color: var(--text-secondary);
+        border-bottom: 1px solid var(--border-color);
+    }
+
+    .table tr:hover {
+        background: var(--card-hover);
+    }
+
+    .status-badge {
+        padding: 0.5rem 1rem;
+        border-radius: 2rem;
+        font-size: 0.875rem;
+        font-weight: 500;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .status-badge.active {
+        background-color: rgba(46, 204, 113, 0.1);
+        color: var(--success-color);
+    }
+
+    .status-badge.closed {
+        background-color: rgba(220, 53, 69, 0.1);
+        color: #dc3545;
+    }
+
+    .job-card {
+        background: var(--card-bg);
+        border-radius: 1rem;
+        padding: 1.5rem;
+        margin-bottom: 1rem;
+        transition: all 0.3s ease;
+        border: 1px solid var(--border-color);
+    }
+
+    .job-card:hover {
+        transform: translateY(-5px);
+        background: var(--card-hover);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+    }
+
+    .job-title {
+        color: var(--text-primary);
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+    }
+
+    .job-company {
+        color: var(--text-secondary);
+        font-size: 0.875rem;
+        margin-bottom: 1rem;
+    }
+
+    .job-details {
+        background: rgba(78, 115, 223, 0.05);
+        border-radius: 0.75rem;
+        padding: 1rem;
+        margin-bottom: 1rem;
+    }
+
+    .job-detail-item {
+        display: flex;
+        align-items: center;
+        margin-bottom: 0.5rem;
+        color: var(--text-secondary);
+    }
+
+    .job-detail-item i {
+        color: var(--primary-color);
+        margin-right: 0.5rem;
+    }
+
+    .job-detail-item:last-child {
+        margin-bottom: 0;
+    }
+
+    .text-muted {
+        color: var(--text-secondary) !important;
+    }
+
+    .text-center {
+        color: var(--text-primary);
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 3rem 1rem;
+    }
+
+    .empty-state i {
+        font-size: 3rem;
+        color: var(--text-secondary);
+        margin-bottom: 1rem;
+    }
+
+    .empty-state p {
+        color: var(--text-secondary);
+        margin-bottom: 1.5rem;
+    }
+
+    @media (max-width: 768px) {
+        .dashboard-container {
+            padding: 0.75rem;
+        }
+
+        .dashboard-header {
+            padding: 1.25rem;
+            margin-bottom: 1rem;
+            border-radius: 1rem;
+        }
+
+        .header-content {
+            padding: 0.5rem;
+        }
+
+        .header-content h2 {
+            font-size: 1.25rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .header-content p {
+            font-size: 0.875rem;
+            margin-bottom: 0;
+        }
+
+        .header-buttons {
+            margin-top: 1rem;
+            padding: 0.5rem;
+            width: 100%;
+            gap: 0.5rem;
+        }
+
+        .header-buttons .btn {
+            width: 100%;
+            margin-bottom: 0.25rem;
+            padding: 0.4rem 0.75rem;
+            font-size: 0.8rem;
+            justify-content: center;
+        }
+
+        .header-buttons .btn i {
+            font-size: 0.8rem;
+        }
+
+        .stat-card {
+            margin-bottom: 0.75rem;
+            padding: 1rem;
+        }
+
+        .stat-icon {
+            width: 40px;
+            height: 40px;
+            font-size: 1.25rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .stat-value {
+            font-size: 1.5rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .stat-label {
+            font-size: 0.875rem;
+        }
+
+        .job-card {
+            padding: 1rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .job-title {
+            font-size: 1.1rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .job-company {
+            font-size: 0.875rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .job-details {
+            padding: 0.75rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .job-detail-item {
+            font-size: 0.875rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .job-detail-item i {
+            font-size: 0.875rem;
+        }
+
+        .d-flex.gap-2 {
+            flex-direction: column;
+            width: 100%;
+            gap: 0.5rem !important;
+        }
+
+        .d-flex.gap-2 .btn {
+            width: 100%;
+            margin-bottom: 0.25rem;
+            justify-content: center;
+            padding: 0.35rem 0.6rem;
+            font-size: 0.75rem;
+        }
+
+        .d-flex.gap-2 .btn i {
+            font-size: 0.75rem;
+        }
+
+        .table-responsive {
+            margin: 0 -0.75rem;
+            width: calc(100% + 1.5rem);
+        }
+
+        .table th, .table td {
+            padding: 0.75rem;
+            font-size: 0.875rem;
+            white-space: nowrap;
+        }
+
+        .status-badge {
+            padding: 0.25rem 0.5rem;
+            font-size: 0.75rem;
+        }
+
+        .status-badge i {
+            font-size: 0.75rem;
+        }
+
+        .card-header {
+            padding: 0.75rem;
+        }
+
+        .card-title {
+            font-size: 1.1rem;
+        }
+
+        .card-title i {
+            font-size: 1rem;
+        }
+
+        .empty-state {
+            padding: 1.5rem 0.75rem;
+        }
+
+        .empty-state i {
+            font-size: 2rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .empty-state p {
+            font-size: 0.875rem;
+            margin-bottom: 1rem;
+        }
+
+        .empty-state .btn {
+            width: 100%;
+            padding: 0.5rem 1rem;
+            font-size: 0.875rem;
+        }
+
+        .profile-circle {
+            width: 35px;
+            height: 35px;
+            margin-right: 0.75rem;
+        }
+
+        .welcome-section {
+            gap: 0.75rem;
+        }
+
+        .tooltip-custom .tooltip-text {
+            display: none;
+        }
+    }
+
+    @media (max-width: 576px) {
+        .dashboard-container {
+            padding: 0.5rem;
+        }
+
+        .dashboard-header {
+            padding: 1rem;
+            border-radius: 0.75rem;
+        }
+
+        .header-content h2 {
+            font-size: 1.1rem;
+        }
+
+        .header-content p {
+            font-size: 0.8rem;
+        }
+
+        .stat-card {
+            padding: 0.75rem;
+        }
+
+        .stat-icon {
+            width: 35px;
+            height: 35px;
+            font-size: 1.1rem;
+        }
+
+        .stat-value {
+            font-size: 1.25rem;
+        }
+
+        .stat-label {
+            font-size: 0.8rem;
+        }
+
+        .job-card {
+            padding: 0.75rem;
+        }
+
+        .job-title {
+            font-size: 1rem;
+        }
+
+        .job-company {
+            font-size: 0.8rem;
+        }
+
+        .job-details {
+            padding: 0.5rem;
+        }
+
+        .job-detail-item {
+            font-size: 0.8rem;
+        }
+
+        .btn {
+            padding: 0.4rem 0.75rem;
+            font-size: 0.8rem;
+        }
+
+        .btn i {
+            font-size: 0.8rem;
+        }
+
+        .table th, .table td {
+            padding: 0.5rem;
+            font-size: 0.8rem;
+        }
+
+        .status-badge {
+            padding: 0.2rem 0.4rem;
+            font-size: 0.7rem;
+        }
+
+        .card-header {
+            padding: 0.5rem;
+        }
+
+        .card-title {
+            font-size: 1rem;
+        }
+
+        .empty-state {
+            padding: 1rem 0.5rem;
+        }
+
+        .empty-state i {
+            font-size: 1.75rem;
+        }
+
+        .empty-state p {
+            font-size: 0.8rem;
+        }
+
+        .profile-circle {
+            width: 30px;
+            height: 30px;
+            margin-right: 0.5rem;
+        }
+
+        .welcome-section {
+            gap: 0.5rem;
+        }
+
+        .header-buttons .btn {
+            padding: 0.35rem 0.6rem;
+            font-size: 0.75rem;
+        }
+
+        .header-buttons .btn i {
+            font-size: 0.75rem;
+        }
+
+        .btn {
+            padding: 0.35rem 0.6rem;
+            font-size: 0.75rem;
+            border-radius: 0.4rem;
+        }
+
+        .btn i {
+            font-size: 0.75rem;
+        }
+
+        .btn-sm {
+            padding: 0.2rem 0.4rem;
+            font-size: 0.7rem;
+        }
+
+        .btn-sm i {
+            font-size: 0.7rem;
+        }
+
+        .d-flex.gap-2 .btn {
+            padding: 0.3rem 0.5rem;
+            font-size: 0.7rem;
+        }
+
+        .d-flex.gap-2 .btn i {
+            font-size: 0.7rem;
+        }
+
+        .status-badge {
+            padding: 0.15rem 0.35rem;
+            font-size: 0.65rem;
+        }
+
+        .status-badge i {
+            font-size: 0.65rem;
+        }
+    }
+
+    /* Card-specific styles */
+    .stat-card:nth-child(1) {
+        --card-color: var(--primary-color);
+        --card-color-light: var(--primary-light);
+        --card-bg: rgba(78, 115, 223, 0.05);
+    }
+
+    .stat-card:nth-child(2) {
+        --card-color: var(--success-color);
+        --card-color-light: var(--success-light);
+        --card-bg: rgba(46, 204, 113, 0.05);
+    }
+
+    .stat-card:nth-child(3) {
+        --card-color: var(--warning-color);
+        --card-color-light: var(--warning-light);
+        --card-bg: rgba(241, 196, 15, 0.05);
+    }
+
+    .stat-card:nth-child(4) {
+        --card-color: var(--info-color);
+        --card-color-light: var(--info-light);
+        --card-bg: rgba(52, 152, 219, 0.05);
+    }
+
+    /* Profile Circle Styles */
+    .profile-circle {
+        position: relative;
+        width: 45px;
+        height: 45px;
+        border-radius: 50%;
+        overflow: hidden;
+        border: 2px solid rgba(255, 255, 255, 0.5);
+        transition: all 0.3s ease;
+        cursor: pointer;
+        flex-shrink: 0;
+        margin-right: 1rem;
+    }
+
+    .profile-circle:hover {
+        transform: scale(1.05);
+        border-color: rgba(255, 255, 255, 0.8);
+        box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+    }
+
+    .profile-circle img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .profile-circle .default-avatar {
+        width: 100%;
+        height: 100%;
+        background: rgba(255, 255, 255, 0.2);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 1.25rem;
+    }
+
+    .welcome-section {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    /* UI/UX Improvements */
+    .loading-skeleton {
+        background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+        background-size: 200% 100%;
+        animation: loading 1.5s infinite;
+        border-radius: 4px;
+    }
+
+    @keyframes loading {
+        0% { background-position: 200% 0; }
+        100% { background-position: -200% 0; }
+    }
+
+    .tooltip-custom {
+        position: relative;
+        display: inline-block;
+    }
+
+    .tooltip-custom .tooltip-text {
+        visibility: hidden;
+        width: 120px;
+        background-color: rgba(0, 0, 0, 0.8);
+        color: #fff;
+        text-align: center;
+        border-radius: 6px;
+        padding: 5px;
+        position: absolute;
+        z-index: 1;
+        bottom: 125%;
+        left: 50%;
+        transform: translateX(-50%);
+        opacity: 0;
+        transition: opacity 0.3s;
+    }
+
+    .tooltip-custom:hover .tooltip-text {
+        visibility: visible;
+        opacity: 1;
+    }
+
+    .card-hover-effect {
+        transition: all 0.3s ease;
+    }
+
+    .card-hover-effect:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+    }
+
+    .status-badge {
+        position: relative;
+        overflow: hidden;
+    }
+
+    .status-badge::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+        transform: translateX(-100%);
+        transition: transform 0.6s;
+    }
+
+    .status-badge:hover::after {
+        transform: translateX(100%);
+    }
+
+    .btn {
+        position: relative;
+        overflow: hidden;
+    }
+
+    .btn::after {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 5px;
+        height: 5px;
+        background: rgba(255, 255, 255, 0.5);
+        opacity: 0;
+        border-radius: 100%;
+        transform: scale(1, 1) translate(-50%);
+        transform-origin: 50% 50%;
+    }
+
+    .btn:focus:not(:active)::after {
+        animation: ripple 1s ease-out;
+    }
+
+    @keyframes ripple {
+        0% {
+            transform: scale(0, 0);
+            opacity: 0.5;
+        }
+        100% {
+            transform: scale(20, 20);
+            opacity: 0;
+        }
+    }
+</style>
+{% endblock %}
+
 {% block content %}
-<div class="container">
-    <div class="row mb-4">
-        <div class="col-12">
-            <h2>Welcome, {{ user.username }}</h2>
-            <p class="text-muted">Manage your account and activities</p>
+<div class="dashboard-container">
+    <div class="container-fluid py-4">
+        <!-- Welcome Section -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="dashboard-header">
+                    <div class="header-pattern"></div>
+                    <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center">
+                        <div class="header-content mb-3 mb-md-0">
+                            <div class="welcome-section">
+                                <a href="{% url 'profile' %}" class="profile-circle tooltip-custom">
+                                    {% if user.userprofile.profile_picture %}
+                                        <img src="{{ user.userprofile.profile_picture.url }}" alt="Profile Picture">
+                                    {% else %}
+                                        <div class="default-avatar">
+                                            <i class="bi bi-person"></i>
+                                        </div>
+                                    {% endif %}
+                                    <span class="tooltip-text">View Profile</span>
+                                </a>
+                                <div>
+                                    <h2 class="mb-1">Welcome, {{ request.user.get_full_name|default:request.user.username }}!</h2>
+                                    <p class="mb-0 opacity-75">Here's an overview of your job search activity</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="header-buttons d-flex flex-column flex-md-row gap-2">
+                            <a href="{% url 'profile' %}" class="btn btn-outline-primary tooltip-custom">
+                                <i class="bi bi-person"></i>Edit Profile
+                                <span class="tooltip-text">Update your profile information</span>
+                            </a>
+                            <a href="{% url 'profile_settings' %}" class="btn btn-outline-secondary tooltip-custom">
+                                <i class="bi bi-gear"></i>Settings
+                                <span class="tooltip-text">Manage your account settings</span>
+                            </a>
+                            {% if user.userprofile.user_type == 'employer' %}
+                            <a href="{% url 'post_job' %}" class="btn btn-success tooltip-custom">
+                                <i class="bi bi-plus-circle"></i>Post a Job
+                                <span class="tooltip-text">Create a new job posting</span>
+                            </a>
+                            {% endif %}
+                            <a href="{% url 'job_list' %}" class="btn btn-primary tooltip-custom">
+                                <i class="bi bi-search"></i>Find Jobs
+                                <span class="tooltip-text">Browse available jobs</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
-    </div>
 
-    {% if user_profile.user_type == 'employer' %}
-    <div class="row mb-4">
-        <div class="col-12">
-            <div class="card">
-                <div class="card-body">
-                    <div class="d-flex align-items-center">
-                        {% if user_profile.profile_picture %}
-                            <img src="{{ user_profile.profile_picture.url }}" 
-                                 alt="Profile Picture" 
-                                 class="rounded-circle me-4" 
-                                 style="width: 100px; height: 100px; object-fit: cover;">
+        <!-- Stats Cards -->
+        <div class="row mb-4">
+            {% for stat in stats %}
+            <div class="col-xl-3 col-md-6 mb-4">
+                <div class="stat-card card-hover-effect">
+                    <div class="stat-icon">
+                        <i class="bi {{ stat.icon }}"></i>
+                    </div>
+                    <div class="stat-value">{{ stat.value }}</div>
+                    <div class="stat-label">{{ stat.label }}</div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        <!-- Recent Applications -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header bg-white py-3">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <h5 class="card-title mb-0">
+                                <i class="bi bi-clock-history"></i>
+                                Recent Applications
+                            </h5>
+                            <a href="{% url 'job_list' %}" class="btn btn-sm btn-outline-primary">
+                                <i class="bi bi-search"></i>Find More Jobs
+                            </a>
+                        </div>
+                </div>
+                    <div class="card-body">
+                        {% if applications %}
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Job Title</th>
+                                            <th>Company</th>
+                                            <th>Applied Date</th>
+                                <th>Status</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                                        {% for application in applications %}
+                            <tr>
+                                <td>
+                                                    <a href="{% url 'job_detail' application.job.id %}" class="text-decoration-none">
+                                                        {{ application.job.title }}
+                                                    </a>
+                                </td>
+                                                <td>{{ application.job.company.get_full_name }}</td>
+                                                <td>{{ application.application_date|date:"M d, Y" }}</td>
+                                <td>
+                                                    <span class="status-badge {% if application.status == 'pending' %}active{% elif application.status == 'rejected' %}closed{% else %}active{% endif %}">
+                                                        <i class="bi {% if application.status == 'pending' %}bi-clock{% elif application.status == 'rejected' %}bi-x-circle{% else %}bi-check-circle{% endif %}"></i>
+                                                        {{ application.get_status_display }}
+                                    </span>
+                                </td>
+                                <td>
+                                                    <a href="{% url 'job_detail' application.job.id %}" class="btn btn-sm btn-outline-primary">
+                                                        <i class="bi bi-eye"></i>View
+                                                    </a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                            </div>
                         {% else %}
-                            <div class="rounded-circle bg-light me-4" 
-                                 style="width: 100px; height: 100px; display: flex; align-items: center; justify-content: center;">
-                                <i class="bi bi-person-circle" style="font-size: 3rem; color: #6c757d;"></i>
+                            <div class="empty-state">
+                                <i class="bi bi-inbox"></i>
+                                <p>You haven't applied to any jobs yet.</p>
+                                <a href="{% url 'job_list' %}" class="btn btn-primary">
+                                    <i class="bi bi-search"></i>Find Jobs
+                                </a>
                             </div>
                         {% endif %}
-                        <div>
-                            <h3 class="card-title">Your Company Profile</h3>
-                            <p class="card-text">
-                                <strong>Company Name:</strong> {{ user_profile.company_name }}<br>
-                                <strong>Position:</strong> {{ user_profile.position }}
-                            </p>
-                            <a href="{% url 'profile' %}" class="btn btn-primary">Edit Profile</a>
-                        </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
 
-    <div class="row mb-4">
-        <div class="col-12">
-            <div class="d-flex justify-content-between align-items-center mb-3">
-                <h3>Your Job Postings</h3>
-                <a href="{% url 'post_job' %}" class="btn btn-primary">Post New Job</a>
-            </div>
-            {% if posted_jobs %}
-            <div class="row">
-                {% for job in posted_jobs %}
-                <div class="col-md-6 mb-4">
-                    <div class="card job-card h-100">
-                        <div class="card-body">
-                            <h5 class="card-title">{{ job.title }}</h5>
-                            <p class="card-text">
-                                <i class="bi bi-geo-alt"></i> {{ job.location }}<br>
-                                <i class="bi bi-briefcase"></i> {{ job.get_job_type_display }}<br>
-                                <i class="bi bi-cash"></i> {{ job.salary_range }}
-                            </p>
-                            <div class="d-flex justify-content-between align-items-center">
-                                <a href="{% url 'job_detail' job.id %}" class="btn btn-primary">View Details</a>
-                                <span class="badge bg-{{ job.is_active|yesno:'success,danger' }}">
-                                    {{ job.is_active|yesno:'Active,Inactive' }}
-                                </span>
+        <!-- Recommended Jobs -->
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header bg-white py-3">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <h5 class="card-title mb-0">
+                                <i class="bi bi-star"></i>
+                                Recommended Jobs
+                            </h5>
+                            <a href="{% url 'job_list' %}" class="btn btn-sm btn-outline-primary">
+                                <i class="bi bi-search"></i>View All Jobs
+                            </a>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        {% if posted_jobs %}
+                            <div class="row">
+                                {% for job in posted_jobs %}
+                                    <div class="col-md-6 mb-4">
+                                        <div class="job-card">
+                                            <h5 class="job-title">{{ job.title }}</h5>
+                                            <p class="job-company">{{ job.company.get_full_name }}</p>
+                                            <div class="job-details">
+                                                <div class="job-detail-item">
+                                                    <i class="bi bi-geo-alt"></i>
+                                                    {{ job.get_location_display }}
+                                                </div>
+                                                <div class="job-detail-item">
+                                                    <i class="bi bi-briefcase"></i>
+                                                    {{ job.get_job_type_display }}
+                                                </div>
+                                                <div class="job-detail-item">
+                                                    <i class="bi bi-cash"></i>
+                                                    {{ job.salary_range }}
+                                                </div>
+                                            </div>
+                                            <div class="d-flex justify-content-between align-items-center">
+                                                <div class="d-flex gap-2">
+                                                    <a href="{% url 'job_detail' job.id %}" class="btn btn-primary">
+                                                        <i class="bi bi-eye"></i>{% if user.userprofile.user_type == 'employer' %}View{% else %}View & Apply{% endif %}
+                                                    </a>
+                                                    {% if user.userprofile.user_type == 'employer' and job.company == user %}
+                                                    <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteModal{{ job.id }}">
+                                                        <i class="bi bi-trash"></i>Delete
+                                                    </button>
+                                                    {% endif %}
+                                                </div>
+                                                <small class="text-muted">
+                                                    <i class="bi bi-calendar3"></i>
+                                                    Posted: {{ job.posted_date|date:"M d, Y" }}
+                                                </small>
+                </div>
+
+                                            <!-- Delete Confirmation Modal -->
+                                            {% if user.userprofile.user_type == 'employer' and job.company == user %}
+                                            <div class="modal fade" id="deleteModal{{ job.id }}" tabindex="-1" aria-labelledby="deleteModalLabel{{ job.id }}" aria-hidden="true">
+                                                <div class="modal-dialog modal-dialog-centered">
+                                                    <div class="modal-content">
+                                                        <div class="modal-header border-0">
+                                                            <h5 class="modal-title" id="deleteModalLabel{{ job.id }}">
+                                                                <i class="bi bi-exclamation-triangle text-danger me-2"></i>
+                                                                Confirm Deletion
+                                                            </h5>
+                                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                        </div>
+                                                        <div class="modal-body">
+                                                            <p class="mb-0">Are you sure you want to delete the job posting "<strong>{{ job.title }}</strong>"?</p>
+                                                            <p class="text-danger mt-2 mb-0"><small>This action cannot be undone and all applications for this job will be removed.</small></p>
+                                                        </div>
+                                                        <div class="modal-footer border-0">
+                                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                                                                <i class="bi bi-x-circle me-2"></i>Cancel
+                                                            </button>
+                                                            <form action="{% url 'delete_job' job.id %}" method="post" class="d-inline">
+                                                                {% csrf_token %}
+                                                                <button type="submit" class="btn btn-danger">
+                                                                    <i class="bi bi-trash me-2"></i>Delete Job
+                                                                </button>
+                                                            </form>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                {% endfor %}
                             </div>
-                        </div>
-                    </div>
-                </div>
-                {% endfor %}
-            </div>
-            {% else %}
-            <div class="alert alert-info">
-                You haven't posted any jobs yet. <a href="{% url 'post_job' %}">Post your first job</a>!
-            </div>
-            {% endif %}
-        </div>
-    </div>
-
-    <div class="row">
-        <div class="col-12">
-            <h3>Job Applications</h3>
-            {% if applications %}
-            <div class="table-responsive">
-                <table class="table table-hover">
-                    <thead>
-                        <tr>
-                            <th>Job Title</th>
-                            <th>Applicant</th>
-                            <th>Date Applied</th>
-                            <th>Status</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for application in applications %}
-                        <tr>
-                            <td>{{ application.job.title }}</td>
-                            <td>{{ application.applicant.username }}</td>
-                            <td>{{ application.application_date|date:"M d, Y" }}</td>
-                            <td>
-                                <span class="application-status status-{{ application.status }}">
-                                    {{ application.get_status_display }}
-                                </span>
-                            </td>
-                            <td>
-                                <a href="{% url 'manage_application' application.id %}" class="btn btn-sm btn-primary">
-                                    Manage
-                                </a>
-                            </td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
-            {% else %}
-            <div class="alert alert-info">
-                No applications received yet.
-            </div>
-            {% endif %}
-        </div>
-    </div>
-
-    {% else %}
-    <div class="row mb-4">
-        <div class="col-12">
-            <div class="card">
-                <div class="card-body">
-                    <div class="d-flex align-items-center">
-                        {% if user_profile.profile_picture %}
-                            <img src="{{ user_profile.profile_picture.url }}" 
-                                 alt="Profile Picture" 
-                                 class="rounded-circle me-4" 
-                                 style="width: 100px; height: 100px; object-fit: cover;">
                         {% else %}
-                            <div class="rounded-circle bg-light me-4" 
-                                 style="width: 100px; height: 100px; display: flex; align-items: center; justify-content: center;">
-                                <i class="bi bi-person-circle" style="font-size: 3rem; color: #6c757d;"></i>
-                            </div>
+                            <div class="empty-state">
+                                <i class="bi bi-search"></i>
+                                <p>No recommended jobs found.</p>
+                                <a href="{% url 'job_list' %}" class="btn btn-primary">
+                                    <i class="bi bi-search"></i>Browse All Jobs
+                                </a>
+                    </div>
                         {% endif %}
-                        <div>
-                            <h3 class="card-title">Your Profile</h3>
-                            <p class="card-text">
-                                <strong>Position:</strong> {{ user_profile.position }}<br>
-                                <strong>Bio:</strong> {{ user_profile.bio|default:"No bio yet" }}
-                            </p>
-                            <a href="{% url 'profile' %}" class="btn btn-primary">Edit Profile</a>
-                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-
-    <div class="row">
-        <div class="col-12">
-            <h3>Your Applications</h3>
-            {% if applied_jobs %}
-            <div class="table-responsive">
-                <table class="table table-hover">
-                    <thead>
-                        <tr>
-                            <th>Job Title</th>
-                            <th>Company</th>
-                            <th>Date Applied</th>
-                            <th>Status</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for application in applied_jobs %}
-                        <tr>
-                            <td>{{ application.job.title }}</td>
-                            <td>{{ application.job.company.userprofile.company_name }}</td>
-                            <td>{{ application.application_date|date:"M d, Y" }}</td>
-                            <td>
-                                <span class="application-status status-{{ application.status }}">
-                                    {{ application.get_status_display }}
-                                </span>
-                            </td>
-                            <td>
-                                <a href="{% url 'job_detail' application.job.id %}" class="btn btn-sm btn-primary">
-                                    View Job
-                                </a>
-                            </td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
-            {% else %}
-            <div class="alert alert-info">
-                You haven't applied to any jobs yet. <a href="{% url 'job_list' %}">Browse available jobs</a>!
-            </div>
-            {% endif %}
-        </div>
-    </div>
-    {% endif %}
 </div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Update stats dynamically
+    function updateStats() {
+        fetch('{% url "dashboard_stats" %}')
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('total-jobs').textContent = data.total_jobs;
+                document.getElementById('total-applications').textContent = data.total_applications;
+                document.getElementById('total-views').textContent = data.total_views;
+                document.getElementById('active-jobs').textContent = data.active_jobs;
+            })
+            .catch(error => console.error('Error:', error));
+    }
+
+    // Update stats every 5 minutes
+    setInterval(updateStats, 300000);
+</script>
 {% endblock %} 

@@ -1,0 +1,229 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}Application Details - {{ application.job.title }}{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <!-- Back Button -->
+            <div class="mb-4">
+                <a href="{% url 'application_list' %}" class="btn btn-outline-primary">
+                    <i class="fas fa-arrow-left me-2"></i>Back to Applications
+                </a>
+            </div>
+
+            <!-- Application Card -->
+            <div class="card border-0 shadow-lg mb-4">
+                <div class="card-body p-4">
+                    <!-- Header -->
+                    <div class="d-flex justify-content-between align-items-start mb-4">
+                        <div>
+                            <h2 class="card-title fw-bold mb-2">
+                                {{ application.job.title }}
+                            </h2>
+                            <p class="text-muted mb-0">
+                                <i class="fas fa-building me-2"></i>{{ application.job.company_name }}
+                            </p>
+                        </div>
+                        <span class="badge {% if application.status == 'pending' %}bg-warning{% elif application.status == 'reviewing' %}bg-info{% elif application.status == 'accepted' %}bg-success{% else %}bg-danger{% endif %} fs-6">
+                            {{ application.get_status_display }}
+                        </span>
+                    </div>
+
+                    <!-- Application Timeline -->
+                    <div class="timeline mb-4">
+                        <div class="timeline-item">
+                            <div class="timeline-marker bg-primary"></div>
+                            <div class="timeline-content">
+                                <h6 class="mb-1">Application Submitted</h6>
+                                <p class="text-muted small mb-0">
+                                    {{ application.applied_date|date:"F d, Y" }} at {{ application.applied_date|time:"g:i A" }}
+                                </p>
+                            </div>
+                        </div>
+                        {% if application.status != 'pending' %}
+                            <div class="timeline-item">
+                                <div class="timeline-marker bg-info"></div>
+                                <div class="timeline-content">
+                                    <h6 class="mb-1">Under Review</h6>
+                                    <p class="text-muted small mb-0">
+                                        {{ application.updated_date|date:"F d, Y" }} at {{ application.updated_date|time:"g:i A" }}
+                                    </p>
+                                </div>
+                            </div>
+                        {% endif %}
+                        {% if application.status == 'accepted' or application.status == 'rejected' %}
+                            <div class="timeline-item">
+                                <div class="timeline-marker {% if application.status == 'accepted' %}bg-success{% else %}bg-danger{% endif %}"></div>
+                                <div class="timeline-content">
+                                    <h6 class="mb-1">
+                                        {% if application.status == 'accepted' %}Application Accepted{% else %}Application Rejected{% endif %}
+                                    </h6>
+                                    <p class="text-muted small mb-0">
+                                        {{ application.updated_date|date:"F d, Y" }} at {{ application.updated_date|time:"g:i A" }}
+                                    </p>
+                                </div>
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Application Details -->
+                    <div class="application-details">
+                        <h5 class="fw-bold mb-3">Application Details</h5>
+                        
+                        <div class="row g-3">
+                            <!-- Job Type -->
+                            <div class="col-md-6">
+                                <div class="detail-item">
+                                    <label class="text-muted small">Job Type</label>
+                                    <p class="mb-0">{{ application.job.get_job_type_display }}</p>
+                                </div>
+                            </div>
+
+                            <!-- Location -->
+                            <div class="col-md-6">
+                                <div class="detail-item">
+                                    <label class="text-muted small">Location</label>
+                                    <p class="mb-0">{{ application.job.get_location_display }}</p>
+                                </div>
+                            </div>
+
+                            <!-- Salary -->
+                            <div class="col-md-6">
+                                <div class="detail-item">
+                                    <label class="text-muted small">Salary</label>
+                                    <p class="mb-0">{{ application.job.salary_range }}</p>
+                                </div>
+                            </div>
+
+                            <!-- Experience Required -->
+                            <div class="col-md-6">
+                                <div class="detail-item">
+                                    <label class="text-muted small">Experience Required</label>
+                                    <p class="mb-0">{{ application.job.experience_required }}</p>
+                                </div>
+                            </div>
+
+                            <!-- Cover Letter -->
+                            <div class="col-12">
+                                <div class="detail-item">
+                                    <label class="text-muted small">Cover Letter</label>
+                                    <div class="p-3 bg-light rounded-3">
+                                        {{ application.cover_letter|linebreaks }}
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Resume -->
+                            <div class="col-12">
+                                <div class="detail-item">
+                                    <label class="text-muted small">Resume</label>
+                                    <div class="p-3 bg-light rounded-3">
+                                        {% if application.resume %}
+                                            <a href="{{ application.resume.url }}" class="btn btn-outline-primary" target="_blank">
+                                                <i class="fas fa-file-pdf me-2"></i>View Resume
+                                            </a>
+                                        {% else %}
+                                            <p class="text-muted mb-0">No resume attached</p>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Actions -->
+                    <div class="mt-4">
+                        {% if application.status == 'pending' %}
+                            <div class="d-flex gap-2">
+                                <a href="{% url 'job_detail' application.job.id %}" class="btn btn-outline-primary flex-grow-1">
+                                    <i class="fas fa-eye me-2"></i>View Job Details
+                                </a>
+                                <button class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#withdrawModal">
+                                    <i class="fas fa-times me-2"></i>Withdraw Application
+                                </button>
+                            </div>
+                        {% else %}
+                            <a href="{% url 'job_detail' application.job.id %}" class="btn btn-outline-primary w-100">
+                                <i class="fas fa-eye me-2"></i>View Job Details
+                            </a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Withdraw Modal -->
+{% if application.status == 'pending' %}
+    <div class="modal fade" id="withdrawModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Withdraw Application</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Are you sure you want to withdraw your application for <strong>{{ application.job.title }}</strong>?</p>
+                    <p class="text-muted">This action cannot be undone.</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <form method="post" action="{% url 'withdraw_application' application.id %}" class="d-inline">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-danger">Withdraw Application</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endif %}
+
+<style>
+    .timeline {
+        position: relative;
+        padding-left: 30px;
+    }
+    
+    .timeline-item {
+        position: relative;
+        padding-bottom: 1.5rem;
+    }
+    
+    .timeline-item:last-child {
+        padding-bottom: 0;
+    }
+    
+    .timeline-marker {
+        position: absolute;
+        left: -30px;
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+    }
+    
+    .timeline-item:not(:last-child)::before {
+        content: '';
+        position: absolute;
+        left: -21px;
+        top: 20px;
+        bottom: 0;
+        width: 2px;
+        background-color: #e9ecef;
+    }
+    
+    .detail-item {
+        background-color: #fff;
+        padding: 1rem;
+        border-radius: 0.5rem;
+        border: 1px solid #e9ecef;
+    }
+    
+    .badge {
+        padding: 0.5em 1em;
+    }
+</style>
+{% endblock %} 

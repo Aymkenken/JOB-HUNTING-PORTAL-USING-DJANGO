@@ -1,41 +1,50 @@
 {% extends 'base.html' %}
 {% load crispy_forms_tags %}
 
-{% block title %}Apply for {{ job.title }} - JobPoint Surigao{% endblock %}
+{% block title %}Apply for {{ job.title }}{% endblock %}
 
 {% block content %}
-<div class="container mt-5">
+<div class="container py-4">
     <div class="row justify-content-center">
-        <div class="col-md-8">
-            <div class="card shadow">
+        <div class="col-lg-8">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title mb-0">Apply for {{ job.title }}</h3>
+                </div>
                 <div class="card-body">
-                    <h2 class="text-center mb-4">Apply for {{ job.title }}</h2>
-                    <p class="text-center text-muted mb-4">at {{ job.company.userprofile.company_name }}</p>
-                    
-                    <form method="post" enctype="multipart/form-data" id="applicationForm">
+                    <div class="alert alert-info mb-4">
+                        <h5 class="alert-heading"><i class="bi bi-info-circle me-2"></i>Before You Apply</h5>
+                        <p class="mb-0">Please make sure your profile is complete and up-to-date. Your application will be reviewed based on your profile information.</p>
+                    </div>
+
+                    <form method="post" enctype="multipart/form-data">
                         {% csrf_token %}
-                        <div class="row">
-                            <div class="col-md-12">
-                                {{ form.cover_letter|as_crispy_field }}
-                            </div>
+                        
+                        <div class="mb-4">
+                            <h5 class="text-primary mb-3">Cover Letter</h5>
+                            <p class="text-muted mb-3">Please write a cover letter explaining why you're interested in this position and how your skills match the requirements.</p>
+                            {{ form.cover_letter|as_crispy_field }}
                         </div>
-                        <div class="row">
-                            <div class="col-md-12">
-                                <div class="mb-3">
-                                    <label for="id_resume" class="form-label">Resume (PDF, DOC, DOCX)</label>
-                                    <input type="file" name="resume" class="form-control" id="id_resume" accept=".pdf,.doc,.docx">
-                                    <div class="form-text">Upload your resume in PDF or Word format (max 5MB)</div>
-                                    {% if form.resume.errors %}
-                                        <div class="invalid-feedback d-block">
-                                            {{ form.resume.errors }}
-                                        </div>
-                                    {% endif %}
-                                </div>
-                            </div>
+
+                        <div class="mb-4">
+                            <h5 class="text-primary mb-3">Resume</h5>
+                            <p class="text-muted mb-3">Upload your resume in PDF or DOC format (max 5MB).</p>
+                            {{ form.resume|as_crispy_field }}
                         </div>
+
+                        <div class="mb-4">
+                            <h5 class="text-primary mb-3">Additional Information</h5>
+                            <p class="text-muted mb-3">Any additional information you'd like to share with the employer.</p>
+                            {{ form.additional_info|as_crispy_field }}
+                        </div>
+
                         <div class="d-grid gap-2">
-                            <button type="submit" class="btn btn-primary" id="submitBtn">Submit Application</button>
-                            <a href="{% url 'job_detail' job.id %}" class="btn btn-outline-secondary">Cancel</a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-send me-2"></i>Submit Application
+                            </button>
+                            <a href="{% url 'job_detail' job.id %}" class="btn btn-outline-secondary">
+                                <i class="bi bi-arrow-left me-2"></i>Back to Job Details
+                            </a>
                         </div>
                     </form>
                 </div>

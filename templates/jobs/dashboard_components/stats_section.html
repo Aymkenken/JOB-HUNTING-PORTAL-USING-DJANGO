@@ -1,0 +1,46 @@
+{% if user_profile.user_type == 'employer' %}
+<!-- Stats Section -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="dashboard-stats">
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="bi bi-briefcase"></i>
+                </div>
+                <div class="stat-value" id="totalJobs">0</div>
+                <div class="stat-label">Total Jobs Posted</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="bi bi-check-circle"></i>
+                </div>
+                <div class="stat-value" id="activeJobs">0</div>
+                <div class="stat-label">Active Jobs</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="bi bi-people"></i>
+                </div>
+                <div class="stat-value" id="totalApplications">0</div>
+                <div class="stat-label">Total Applications</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="bi bi-hourglass-split"></i>
+                </div>
+                <div class="stat-value" id="pendingApplications">0</div>
+                <div class="stat-label">Pending Applications</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add data attributes to store stats -->
+<div id="dashboardStats" 
+     data-total-jobs="{{ posted_jobs|length|default:0 }}"
+     data-active-jobs="{{ posted_jobs|length|default:0 }}"
+     data-total-applications="{{ applications|length|default:0 }}"
+     data-pending-applications="{{ applications|length|default:0 }}"
+     style="display: none;">
+</div>
+{% endif %} 

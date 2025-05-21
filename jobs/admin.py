@@ -22,13 +22,13 @@ class CustomUserAdmin(UserAdmin):
 
 class JobAdmin(admin.ModelAdmin):
     list_display = ('title', 'company', 'get_location', 'job_type', 'salary_range', 'deadline', 'is_active')
-    list_filter = ('job_type', 'is_active', 'posted_date', 'country', 'province', 'city')
+    list_filter = ('job_type', 'is_active', 'posted_date')
     search_fields = ('title', 'company__username', 'description')
     date_hierarchy = 'posted_date'
     readonly_fields = ('posted_date',)
 
     def get_location(self, obj):
-        return f"{obj.barangay.name}, {obj.city.name}, {obj.province.name}"
+        return str(obj.location) if obj.location else "-"
     get_location.short_description = 'Location'
 
 class JobApplicationAdmin(admin.ModelAdmin):

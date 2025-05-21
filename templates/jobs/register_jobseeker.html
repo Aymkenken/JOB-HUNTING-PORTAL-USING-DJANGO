@@ -1,0 +1,287 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}Register as Job Seeker - JobPoint Surigao{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <!-- Logo Section -->
+            <div class="text-center mb-5">
+                <div class="logo-container mb-3">
+                    <div class="logo-circle">
+                        <div class="logo-inner">
+                            <div class="logo-icon">
+                                <i class="fas fa-user-tie"></i>
+                            </div>
+                            <div class="logo-rings">
+                                <div class="ring ring-1"></div>
+                                <div class="ring ring-2"></div>
+                                <div class="ring ring-3"></div>
+                            </div>
+                        </div>
+                        <div class="logo-shine"></div>
+                    </div>
+                    <div class="logo-particles">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </div>
+                </div>
+                <h2 class="fw-bold text-primary">Job Seeker</h2>
+                <p class="text-muted">Join our community of professionals</p>
+            </div>
+
+            <div class="card border-0 shadow-lg">
+                <div class="card-body p-4">
+                    <form method="post" class="needs-validation" novalidate>
+                        {% csrf_token %}
+                        
+                        <div class="row g-3">
+                            <!-- Username -->
+                            <div class="col-md-12">
+                                {{ form.username|as_crispy_field }}
+                            </div>
+
+                            <!-- Email -->
+                            <div class="col-md-12">
+                                {{ form.email|as_crispy_field }}
+                            </div>
+
+                            <!-- First Name -->
+                            <div class="col-md-6">
+                                {{ form.first_name|as_crispy_field }}
+                            </div>
+
+                            <!-- Last Name -->
+                            <div class="col-md-6">
+                                {{ form.last_name|as_crispy_field }}
+                            </div>
+
+                            <!-- Password -->
+                            <div class="col-md-6">
+                                {{ form.password1|as_crispy_field }}
+                            </div>
+
+                            <!-- Confirm Password -->
+                            <div class="col-md-6">
+                                {{ form.password2|as_crispy_field }}
+                            </div>
+                        </div>
+
+                        <div class="d-grid gap-2 mt-4">
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="fas fa-user-plus me-2"></i>Create Account
+                            </button>
+                        </div>
+                    </form>
+
+                    <div class="text-center mt-4">
+                        <p class="mb-0">Already have an account? 
+                            <a href="{% url 'login' %}" class="text-decoration-none fw-bold">
+                                <i class="fas fa-sign-in-alt me-1"></i>Login here
+                            </a>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .logo-container {
+        position: relative;
+        width: 160px;
+        height: 160px;
+        margin: 0 auto;
+    }
+
+    .logo-circle {
+        width: 100%;
+        height: 100%;
+        border-radius: 50%;
+        position: relative;
+        background: linear-gradient(135deg, #4e73df 0%, #224abe 100%);
+        box-shadow: 0 10px 30px rgba(78, 115, 223, 0.3);
+        overflow: hidden;
+    }
+
+    .logo-inner {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 70%;
+        height: 70%;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(5px);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: 2px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .logo-icon {
+        position: relative;
+        z-index: 2;
+        color: white;
+        font-size: 2.5rem;
+        text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+    }
+
+    .logo-rings {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        animation: rotate 20s linear infinite;
+    }
+
+    .ring {
+        position: absolute;
+        border: 2px solid rgba(255, 255, 255, 0.1);
+        border-radius: 50%;
+        animation: pulse 3s ease-in-out infinite;
+    }
+
+    .ring-1 {
+        width: 100%;
+        height: 100%;
+        animation-delay: 0s;
+    }
+
+    .ring-2 {
+        width: 80%;
+        height: 80%;
+        top: 10%;
+        left: 10%;
+        animation-delay: 0.5s;
+    }
+
+    .ring-3 {
+        width: 60%;
+        height: 60%;
+        top: 20%;
+        left: 20%;
+        animation-delay: 1s;
+    }
+
+    .logo-shine {
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background: linear-gradient(
+            45deg,
+            transparent 0%,
+            rgba(255, 255, 255, 0.1) 45%,
+            rgba(255, 255, 255, 0.2) 50%,
+            rgba(255, 255, 255, 0.1) 55%,
+            transparent 100%
+        );
+        animation: shine 3s ease-in-out infinite;
+    }
+
+    .logo-particles span {
+        position: absolute;
+        width: 4px;
+        height: 4px;
+        background: #4e73df;
+        border-radius: 50%;
+        animation: float 3s ease-in-out infinite;
+        box-shadow: 0 0 10px #4e73df;
+    }
+
+    .logo-particles span:nth-child(1) {
+        top: 20%;
+        left: 20%;
+        animation-delay: 0s;
+    }
+
+    .logo-particles span:nth-child(2) {
+        top: 60%;
+        right: 20%;
+        animation-delay: 0.5s;
+    }
+
+    .logo-particles span:nth-child(3) {
+        bottom: 20%;
+        left: 30%;
+        animation-delay: 1s;
+    }
+
+    .logo-particles span:nth-child(4) {
+        top: 30%;
+        right: 30%;
+        animation-delay: 1.5s;
+    }
+
+    @keyframes rotate {
+        from {
+            transform: rotate(0deg);
+        }
+        to {
+            transform: rotate(360deg);
+        }
+    }
+
+    @keyframes pulse {
+        0%, 100% {
+            transform: scale(1);
+            opacity: 0.5;
+        }
+        50% {
+            transform: scale(1.1);
+            opacity: 0.8;
+        }
+    }
+
+    @keyframes shine {
+        0% {
+            transform: translateX(-100%) translateY(-100%) rotate(45deg);
+        }
+        100% {
+            transform: translateX(100%) translateY(100%) rotate(45deg);
+        }
+    }
+
+    @keyframes float {
+        0%, 100% {
+            transform: translateY(0);
+        }
+        50% {
+            transform: translateY(-10px);
+        }
+    }
+
+    .logo-circle:hover {
+        transform: scale(1.05);
+        box-shadow: 0 15px 40px rgba(78, 115, 223, 0.4);
+    }
+
+    .logo-circle:hover .logo-inner {
+        background: rgba(255, 255, 255, 0.15);
+    }
+
+    .btn {
+        transition: all 0.3s ease;
+    }
+    
+    .btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+
+    .card {
+        transition: transform 0.3s ease;
+    }
+
+    .card:hover {
+        transform: translateY(-5px);
+    }
+</style>
+{% endblock %} 

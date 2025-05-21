@@ -1,0 +1,338 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+{% load static %}
+
+{% block title %}Profile Settings - JobPoint Surigao{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <!-- Back Button -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <a href="{% url 'dashboard' %}" class="btn btn-outline-primary">
+                <i class="bi bi-arrow-left"></i>Back to Dashboard
+            </a>
+        </div>
+    </div>
+
+    <div class="row justify-content-center">
+        <div class="col-12 col-md-8">
+            <div class="card shadow-sm">
+                <div class="card-header bg-gradient py-3 d-flex justify-content-between align-items-center">
+                    <h4 class="mb-0 text-white">
+                        <i class="bi bi-gear"></i>Profile Settings
+                    </h4>
+                    <a href="{% url 'profile' %}" class="btn btn-light">
+                        <i class="bi bi-person"></i>Back to Profile
+                    </a>
+                </div>
+                <div class="card-body p-4">
+                    <!-- Password Change -->
+                    <div class="section mb-4">
+                        <h5 class="section-title mb-3">
+                            <i class="bi bi-key"></i>Change Password
+                        </h5>
+                        <form method="post" action="{% url 'change_password' %}" id="passwordForm">
+                            {% csrf_token %}
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="current_password">
+                                            <i class="bi bi-lock"></i>Current Password
+                                        </label>
+                                        <input type="password" class="form-control" id="current_password" name="current_password" required>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="new_password">
+                                            <i class="bi bi-key"></i>New Password
+                                        </label>
+                                        <input type="password" class="form-control" id="new_password" name="new_password" required>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="confirm_password">
+                                            <i class="bi bi-check-circle"></i>Confirm New Password
+                                        </label>
+                                        <input type="password" class="form-control" id="confirm_password" name="confirm_password" required>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="mt-3">
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="bi bi-key"></i>Change Password
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <!-- Account Deletion -->
+                    <div class="section mb-4">
+                        <h5 class="section-title mb-3">
+                            <i class="bi bi-trash"></i>Delete Account
+                        </h5>
+                        <div class="alert alert-danger">
+                            <i class="bi bi-exclamation-triangle"></i>
+                            Warning: This action cannot be undone. All your data will be permanently deleted.
+                        </div>
+                        <form method="post" action="{% url 'delete_profile' %}" id="deleteForm">
+                            {% csrf_token %}
+                            <div class="form-group mb-3">
+                                <div class="form-check">
+                                    <input type="checkbox" class="form-check-input" id="confirm_delete" name="confirm_delete" required>
+                                    <label class="form-check-label" for="confirm_delete">
+                                        I understand that this action cannot be undone
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="form-group mb-3">
+                                <label for="delete_password">
+                                    <i class="bi bi-lock"></i>Enter your password to confirm
+                                </label>
+                                <input type="password" class="form-control" id="delete_password" name="password" required>
+                            </div>
+                            <button type="submit" class="btn btn-danger">
+                                <i class="bi bi-trash"></i>Delete Account
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    :root {
+        --primary-color: #4e73df;
+        --primary-light: #224abe;
+        --primary-dark: #1a3a8f;
+        --success-color: #2ecc71;
+        --success-light: #27ae60;
+        --warning-color: #f1c40f;
+        --warning-light: #f39c12;
+        --info-color: #3498db;
+        --info-light: #2980b9;
+        --bg-gradient-start: #f8f9ff;
+        --bg-gradient-end: #eef2ff;
+        --card-bg: #ffffff;
+        --card-hover: #f8f9ff;
+        --text-primary: #2d3748;
+        --text-secondary: #4a5568;
+        --border-color: #e2e8f0;
+    }
+
+    body {
+        background: linear-gradient(135deg, var(--bg-gradient-start) 0%, var(--bg-gradient-end) 100%);
+        min-height: 100vh;
+        color: var(--text-primary);
+    }
+
+    .card {
+        border: none;
+        border-radius: 1rem;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+        background: var(--card-bg);
+        overflow: hidden;
+    }
+
+    .card-header.bg-gradient {
+        background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+        border-radius: 1rem 1rem 0 0;
+    }
+
+    .card-header h4 {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .section {
+        background: var(--card-bg);
+        padding: 1.5rem;
+        border-radius: 0.75rem;
+        transition: all 0.3s ease;
+        border: 1px solid var(--border-color);
+    }
+
+    .section:hover {
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+        transform: translateY(-2px);
+        background: var(--card-hover);
+    }
+
+    .section-title {
+        color: var(--text-primary);
+        font-weight: 600;
+        margin-bottom: 1rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .section-title i {
+        color: var(--primary-color);
+    }
+
+    .form-group {
+        margin-bottom: 1rem;
+    }
+
+    .form-group label {
+        font-weight: 500;
+        color: var(--text-secondary);
+        margin-bottom: 0.5rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .form-group label i {
+        color: var(--primary-color);
+    }
+
+    .form-control {
+        background: var(--card-bg);
+        border: 1px solid var(--border-color);
+        border-radius: 0.5rem;
+        padding: 0.625rem 0.75rem;
+        transition: all 0.3s ease;
+        color: var(--text-primary);
+    }
+
+    .form-control:focus {
+        background: var(--card-bg);
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 0.2rem rgba(78, 115, 223, 0.15);
+        color: var(--text-primary);
+    }
+
+    .form-control::placeholder {
+        color: var(--text-secondary);
+    }
+
+    .btn {
+        padding: 0.625rem 1.25rem;
+        border-radius: 0.5rem;
+        font-weight: 500;
+        transition: all 0.3s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .btn-primary {
+        background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+        border: none;
+        color: white;
+    }
+
+    .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 15px rgba(78, 115, 223, 0.3);
+    }
+
+    .btn-danger {
+        background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+        border: none;
+        color: white;
+    }
+
+    .btn-danger:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 15px rgba(220, 53, 69, 0.3);
+    }
+
+    .btn-light {
+        background: rgba(255, 255, 255, 0.9);
+        border: none;
+        color: var(--primary-color);
+    }
+
+    .btn-light:hover {
+        background: white;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 15px rgba(255, 255, 255, 0.3);
+    }
+
+    .alert-danger {
+        background: linear-gradient(135deg, rgba(220, 53, 69, 0.1) 0%, rgba(200, 35, 51, 0.1) 100%);
+        border: none;
+        border-radius: 0.5rem;
+        color: #dc3545;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 1rem;
+    }
+
+    .form-check-input {
+        background-color: var(--card-bg);
+        border-color: var(--border-color);
+    }
+
+    .form-check-input:checked {
+        background-color: var(--primary-color);
+        border-color: var(--primary-color);
+    }
+
+    .form-check-label {
+        color: var(--text-secondary);
+    }
+
+    @media (max-width: 768px) {
+        .container {
+            padding: 1rem;
+        }
+
+        .section {
+            padding: 1rem;
+        }
+
+        .btn {
+            width: 100%;
+            margin-bottom: 0.5rem;
+        }
+
+        .d-flex {
+            flex-direction: column;
+        }
+
+        .d-flex .btn {
+            margin-bottom: 0.5rem;
+        }
+    }
+</style>
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Password form validation
+    const passwordForm = document.getElementById('passwordForm');
+    if (passwordForm) {
+        passwordForm.addEventListener('submit', function(e) {
+            const newPassword = document.getElementById('new_password').value;
+            const confirmPassword = document.getElementById('confirm_password').value;
+            
+            if (newPassword !== confirmPassword) {
+                e.preventDefault();
+                alert('New passwords do not match!');
+            }
+        });
+    }
+
+    // Delete form validation
+    const deleteForm = document.getElementById('deleteForm');
+    if (deleteForm) {
+        deleteForm.addEventListener('submit', function(e) {
+            if (!confirm('Are you sure you want to delete your account? This action cannot be undone.')) {
+                e.preventDefault();
+            }
+        });
+    }
+});
+</script>
+{% endblock %}
+{% endblock %} 

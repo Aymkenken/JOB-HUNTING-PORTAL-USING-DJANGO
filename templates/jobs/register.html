@@ -4,25 +4,791 @@
 {% block title %}Register - JobPoint Surigao{% endblock %}
 
 {% block content %}
-<div class="container mt-5">
-    <div class="row justify-content-center">
-        <div class="col-md-6">
-            <div class="card shadow">
-                <div class="card-body">
-                    <h2 class="text-center mb-4">Create an Account</h2>
-                    <form method="post">
-                        {% csrf_token %}
-                        {{ form|crispy }}
-                        <div class="d-grid gap-2">
-                            <button type="submit" class="btn btn-primary">Register</button>
+<div class="register-container">
+    <div class="container py-5">
+        <div class="row justify-content-center">
+            <div class="col-md-8 col-lg-6">
+                <div class="register-card">
+                    <div class="card-header text-center py-4">
+                        <div class="header-icon mb-3">
+                            <i class="bi bi-person-plus-fill"></i>
                         </div>
-                    </form>
-                    <div class="text-center mt-3">
-                        <p>Already have an account? <a href="{% url 'login' %}">Login here</a></p>
+                        <h2 class="mb-0">Create Your Account</h2>
+                        <p class="text-muted mt-2">Join JobPoint Surigao today</p>
+                        
+                        <div class="progress-container mt-4">
+                            <div class="progress" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
+                                <div class="progress-bar"></div>
+                            </div>
+                            <div class="progress-steps">
+                                <div class="step active" data-step="1">
+                                    <i class="bi bi-person"></i>
+                                    <span>Account Type</span>
+                                </div>
+                                <div class="step" data-step="2">
+                                    <i class="bi bi-person-badge"></i>
+                                    <span>Details</span>
+                                </div>
+                                <div class="step" data-step="3">
+                                    <i class="bi bi-check-circle"></i>
+                                    <span>Complete</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card-body p-4 p-md-5">
+                        <form method="post" class="register-form" novalidate>
+                            {% csrf_token %}
+                            
+                            <div class="registration-step" id="step1">
+                                <div class="row g-4">
+                                    <div class="col-md-6">
+                                        <div class="user-type-card">
+                                            <input type="radio" name="user_type" value="jobseeker" id="user_type_jobseeker" class="user-type-radio" required>
+                                            <label for="user_type_jobseeker" class="user-type-card-label">
+                                                <div class="user-type-card-content">
+                                                    <div class="user-type-icon">
+                                                        <i class="bi bi-person-badge"></i>
+                                                    </div>
+                                                    <div class="user-type-info">
+                                                        <h4>Job Seeker</h4>
+                                                        <p>Find and apply for jobs</p>
+                                                    </div>
+                                                </div>
+                                            </label>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-6">
+                                        <div class="user-type-card">
+                                            <input type="radio" name="user_type" value="employer" id="user_type_employer" class="user-type-radio" required>
+                                            <label for="user_type_employer" class="user-type-card-label">
+                                                <div class="user-type-card-content">
+                                                    <div class="user-type-icon">
+                                                        <i class="bi bi-building"></i>
+                                                    </div>
+                                                    <div class="user-type-info">
+                                                        <h4>Employer</h4>
+                                                        <p>Post jobs and hire talent</p>
+                                                    </div>
+                                                </div>
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="d-grid gap-2 mt-4">
+                                    <button type="button" class="btn btn-primary next-step">Continue</button>
+                                </div>
+                            </div>
+
+                            <div class="registration-step" id="step2" style="display: none;">
+                                {% for field in form %}
+                                    {% if field.name != 'user_type' %}
+                                        <div class="form-group mb-4">
+                                            <label for="{{ field.id_for_label }}" class="form-label">
+                                                {{ field.label }}
+                                                {% if field.field.required %}
+                                                    <span class="required-mark">*</span>
+                                                {% endif %}
+                                            </label>
+
+                                            <div class="input-group">
+                                                {% if field.name == 'username' %}
+                                                    <span class="input-group-text"><i class="bi bi-person"></i></span>
+                                                {% elif field.name == 'email' %}
+                                                    <span class="input-group-text"><i class="bi bi-envelope"></i></span>
+                                                {% elif field.name == 'first_name' or field.name == 'last_name' %}
+                                                    <span class="input-group-text"><i class="bi bi-person-badge"></i></span>
+                                                {% elif 'password' in field.name %}
+                                                    <span class="input-group-text"><i class="bi bi-lock"></i></span>
+                                                {% endif %}
+                                                {{ field }}
+                                                {% if 'password' in field.name %}
+                                                    <button class="btn btn-link password-toggle" type="button">
+                                                        <i class="bi bi-eye-slash-fill"></i>
+                                                    </button>
+                                                {% endif %}
+                                            </div>
+
+                                            {% if field.help_text %}
+                                                <small class="form-text text-muted">{{ field.help_text }}</small>
+                                            {% endif %}
+
+                                            {% if field.errors %}
+                                                <div class="invalid-feedback d-block">
+                                                    {{ field.errors }}
+                                                </div>
+                                            {% endif %}
+                                        </div>
+                                    {% endif %}
+                                {% endfor %}
+
+                                <div class="d-flex justify-content-between mt-4">
+                                    <button type="button" class="btn btn-secondary prev-step">Back</button>
+                                    <button type="submit" class="btn btn-primary">Create Account</button>
+                                </div>
+                            </div>
+                        </form>
+
+                        <div class="text-center mt-4">
+                            <p class="mb-0">Already have an account? 
+                                <a href="{% url 'login' %}" class="login-link">Login here</a>
+                            </p>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
+
+<style>
+    .register-container {
+        min-height: 100vh;
+        background: linear-gradient(135deg, #f5f7fa 0%, #e4e8f0 100%);
+        padding: 2rem 0;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .register-container::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%239C92AC' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+        opacity: 0.5;
+        z-index: 0;
+    }
+
+    .register-card {
+        background: rgba(255, 255, 255, 0.95);
+        border-radius: 1.5rem;
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+        transition: all 0.3s ease;
+        border: none;
+        overflow: hidden;
+        position: relative;
+        z-index: 1;
+        backdrop-filter: blur(10px);
+    }
+
+    .register-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+    }
+
+    .card-header {
+        background: linear-gradient(135deg, #4e73df 0%, #224abe 100%);
+        color: white;
+        border-radius: 1.5rem 1.5rem 0 0 !important;
+        border: none;
+        padding: 2rem 1rem;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .card-header::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(45deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 100%);
+        z-index: 1;
+    }
+
+    .header-icon {
+        font-size: 2.5rem;
+        color: rgba(255, 255, 255, 0.9);
+        margin-bottom: 1rem;
+        position: relative;
+        z-index: 2;
+        animation: float 3s ease-in-out infinite;
+    }
+
+    .card-header h2 {
+        font-weight: 700;
+        font-size: 1.75rem;
+        margin-bottom: 0.5rem;
+        line-height: 1.4;
+        letter-spacing: -0.5px;
+        position: relative;
+        z-index: 2;
+    }
+
+    .card-header p {
+        font-size: 1rem;
+        opacity: 0.9;
+        position: relative;
+        z-index: 2;
+    }
+
+    .progress-container {
+        position: relative;
+        z-index: 2;
+        padding: 0 2rem;
+        margin-top: 2rem;
+    }
+
+    .progress {
+        height: 4px;
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: 2px;
+        margin-bottom: 1rem;
+        overflow: hidden;
+    }
+
+    .progress-bar {
+        background: #fff;
+        width: 0;
+        transition: width 0.3s ease;
+    }
+
+    .progress-steps {
+        display: flex;
+        justify-content: space-between;
+        position: relative;
+    }
+
+    .step {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        color: rgba(255, 255, 255, 0.5);
+        transition: all 0.3s ease;
+    }
+
+    .step.active {
+        color: #fff;
+    }
+
+    .step i {
+        font-size: 1.25rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .step span {
+        font-size: 0.875rem;
+        font-weight: 500;
+    }
+
+    .register-form .form-control {
+        border-radius: 0.75rem;
+        padding: 0.875rem 1rem;
+        border: 2px solid #e0e0e0;
+        transition: all 0.3s ease;
+        font-size: 1rem;
+        background: #fff;
+        width: 100%;
+        color: #2d3748;
+        height: auto;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+    }
+
+    .register-form .form-control:focus {
+        border-color: #4e73df;
+        box-shadow: 0 0 0 0.2rem rgba(78, 115, 223, 0.15);
+        background: #fff;
+        outline: none;
+        transform: translateY(-1px);
+    }
+
+    .register-form .form-control:hover {
+        border-color: #c0c0c0;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    }
+
+    .register-form .form-control::placeholder {
+        color: #a0aec0;
+        transition: all 0.3s ease;
+    }
+
+    .register-form .form-control:focus::placeholder {
+        color: #4e73df;
+        opacity: 0.7;
+    }
+
+    .input-group {
+        position: relative;
+        display: flex;
+        flex-wrap: nowrap;
+        align-items: stretch;
+        width: 100%;
+        margin-bottom: 0.75rem;
+        transition: all 0.3s ease;
+    }
+
+    .input-group:focus-within {
+        transform: translateY(-1px);
+    }
+
+    .input-group-text {
+        background-color: #f8f9fa;
+        border: 2px solid #e0e0e0;
+        border-right: none;
+        border-radius: 0.75rem 0 0 0.75rem;
+        color: #6c757d;
+        transition: all 0.3s ease;
+        padding: 0.875rem 1rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 45px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+    }
+
+    .input-group:focus-within .input-group-text {
+        border-color: #4e73df;
+        color: #4e73df;
+        background-color: #fff;
+        box-shadow: 0 0 0 0.2rem rgba(78, 115, 223, 0.15);
+    }
+
+    .input-group:hover .input-group-text {
+        border-color: #c0c0c0;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    }
+
+    .input-group .form-control {
+        border-radius: 0 0.75rem 0.75rem 0;
+        border-left: none;
+        flex: 1 1 auto;
+        min-width: 0;
+    }
+
+    .form-group {
+        margin-bottom: 1.75rem;
+        position: relative;
+        animation: fadeInUp 0.5s ease forwards;
+        opacity: 0;
+    }
+
+    .form-label {
+        font-weight: 600;
+        color: #2d3748;
+        margin-bottom: 0.5rem;
+        font-size: 0.95rem;
+        display: flex;
+        align-items: center;
+        transition: all 0.3s ease;
+    }
+
+    .input-group:focus-within + .form-label {
+        color: #4e73df;
+    }
+
+    .required-mark {
+        color: #dc3545;
+        margin-left: 0.25rem;
+        font-weight: bold;
+    }
+
+    .invalid-feedback {
+        color: #dc3545;
+        font-size: 0.875rem;
+        margin-top: 0.5rem;
+        font-weight: 500;
+        display: flex;
+        align-items: center;
+        animation: shake 0.5s ease-in-out;
+    }
+
+    @keyframes shake {
+        0%, 100% { transform: translateX(0); }
+        25% { transform: translateX(-5px); }
+        75% { transform: translateX(5px); }
+    }
+
+    .invalid-feedback::before {
+        content: '⚠️';
+        margin-right: 0.5rem;
+    }
+
+    .form-text {
+        font-size: 0.85rem;
+        margin-top: 0.5rem;
+        color: #6c757d;
+        display: flex;
+        align-items: center;
+        transition: all 0.3s ease;
+    }
+
+    .form-text::before {
+        content: '💡';
+        margin-right: 0.5rem;
+    }
+
+    select.form-control {
+        appearance: none;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%236c757d' viewBox='0 0 16 16'%3E%3Cpath d='M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 1rem center;
+        background-size: 16px 12px;
+        padding-right: 2.5rem;
+        cursor: pointer;
+    }
+
+    select.form-control:hover {
+        border-color: #c0c0c0;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    }
+
+    select.form-control:focus {
+        border-color: #4e73df;
+        box-shadow: 0 0 0 0.2rem rgba(78, 115, 223, 0.15);
+        transform: translateY(-1px);
+    }
+
+    .password-toggle {
+        width: 38px;
+        height: 38px;
+        padding: 0;
+        border: none;
+        background: transparent;
+        color: #6c757d;
+        border-radius: 0.25rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.2s ease;
+        margin: 0;
+        position: absolute;
+        right: 4px;
+        top: 50%;
+        transform: translateY(-50%);
+        z-index: 2;
+    }
+
+    .password-toggle i {
+        font-size: 1.1rem;
+        transition: transform 0.2s ease;
+    }
+
+    .password-toggle:hover {
+        background: rgba(78, 115, 223, 0.1);
+        color: #4e73df;
+    }
+
+    .password-toggle:active {
+        transform: translateY(-50%) scale(0.95);
+    }
+
+    .password-toggle i.bi-eye-slash-fill {
+        color: #6c757d;
+    }
+
+    .password-toggle i.bi-eye-fill {
+        color: #4e73df;
+    }
+
+    .btn-primary {
+        background: linear-gradient(135deg, #4e73df 0%, #224abe 100%);
+        color: white;
+        border: none;
+        border-radius: 0.75rem;
+        padding: 1rem 1.5rem;
+        font-weight: 600;
+        font-size: 1.1rem;
+        transition: all 0.3s ease;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .btn-primary::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+        transition: 0.5s;
+    }
+
+    .btn-primary:hover::before {
+        left: 100%;
+    }
+
+    .btn-primary:hover {
+        background: linear-gradient(135deg, #224abe 0%, #1a3a8f 100%);
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(78, 115, 223, 0.3);
+    }
+
+    .btn-primary:active {
+        transform: translateY(0);
+    }
+
+    .btn-secondary {
+        background: #f8f9fa;
+        color: #4e73df;
+        border: 2px solid #4e73df;
+        border-radius: 0.75rem;
+        padding: 1rem 1.5rem;
+        font-weight: 600;
+        font-size: 1.1rem;
+        transition: all 0.3s ease;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .btn-secondary:hover {
+        background: #4e73df;
+        color: white;
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(78, 115, 223, 0.3);
+    }
+
+    .btn-secondary:active {
+        transform: translateY(0);
+    }
+
+    .login-link {
+        color: #4e73df;
+        text-decoration: none;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        position: relative;
+    }
+
+    .login-link::after {
+        content: '';
+        position: absolute;
+        width: 100%;
+        height: 2px;
+        bottom: -2px;
+        left: 0;
+        background-color: #224abe;
+        transform: scaleX(0);
+        transform-origin: bottom right;
+        transition: transform 0.3s ease;
+    }
+
+    .login-link:hover::after {
+        transform: scaleX(1);
+        transform-origin: bottom left;
+    }
+
+    @keyframes float {
+        0% { transform: translateY(0px); }
+        50% { transform: translateY(-10px); }
+        100% { transform: translateY(0px); }
+    }
+
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .form-group:nth-child(1) { animation-delay: 0.1s; }
+    .form-group:nth-child(2) { animation-delay: 0.2s; }
+    .form-group:nth-child(3) { animation-delay: 0.3s; }
+    .form-group:nth-child(4) { animation-delay: 0.4s; }
+    .form-group:nth-child(5) { animation-delay: 0.5s; }
+    .form-group:nth-child(6) { animation-delay: 0.6s; }
+    .form-group:nth-child(7) { animation-delay: 0.7s; }
+
+    @media (max-width: 768px) {
+        .register-container {
+            padding: 1rem;
+        }
+        
+        .card-body {
+            padding: 1.5rem !important;
+        }
+
+        .card-header {
+            padding: 1.5rem 1rem;
+        }
+
+        .header-icon {
+            font-size: 2rem;
+        }
+
+        .card-header h2 {
+            font-size: 1.5rem;
+        }
+
+        .btn-primary, .btn-secondary {
+            padding: 0.875rem 1.25rem;
+            font-size: 1rem;
+        }
+
+        .progress-container {
+            padding: 0 1rem;
+        }
+    }
+
+    .user-type-card {
+        position: relative;
+        height: 100%;
+        transition: all 0.3s ease;
+    }
+
+    .user-type-radio {
+        position: absolute;
+        opacity: 0;
+        width: 0;
+        height: 0;
+    }
+
+    .user-type-card-label {
+        display: block;
+        height: 100%;
+        cursor: pointer;
+        border: 2px solid #e2e8f0;
+        border-radius: 1rem;
+        padding: 1.5rem;
+        background: #fff;
+        transition: all 0.3s ease;
+    }
+
+    .user-type-radio:checked + .user-type-card-label {
+        border-color: #4e73df;
+        background: #f8faff;
+        box-shadow: 0 4px 12px rgba(78, 115, 223, 0.15);
+        transform: translateY(-2px);
+    }
+
+    .user-type-card-label:hover {
+        border-color: #4e73df;
+        background: #f8faff;
+        transform: translateY(-1px);
+    }
+
+    .user-type-card-content {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        gap: 1rem;
+    }
+
+    .user-type-icon {
+        width: 64px;
+        height: 64px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #f8fafc;
+        border-radius: 16px;
+        transition: all 0.3s ease;
+    }
+
+    .user-type-radio:checked + .user-type-card-label .user-type-icon {
+        background: #4e73df;
+        color: #fff;
+        transform: scale(1.1);
+    }
+
+    .user-type-icon i {
+        font-size: 2rem;
+        color: #4a5568;
+        transition: all 0.3s ease;
+    }
+
+    .user-type-radio:checked + .user-type-card-label .user-type-icon i {
+        color: #fff;
+    }
+
+    .user-type-info {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    .user-type-info h4 {
+        font-size: 1.25rem;
+        font-weight: 600;
+        color: #2d3748;
+        margin: 0;
+    }
+
+    .user-type-info p {
+        font-size: 0.875rem;
+        color: #718096;
+        margin: 0;
+        line-height: 1.5;
+    }
+
+    .user-type-radio:checked + .user-type-card-label .user-type-info h4 {
+        color: #4e73df;
+    }
+
+    .user-type-radio:checked + .user-type-card-label .user-type-info p {
+        color: #4a5568;
+    }
+
+    @media (max-width: 768px) {
+        .user-type-card-content {
+            gap: 0.75rem;
+        }
+        
+        .user-type-icon {
+            width: 48px;
+            height: 48px;
+        }
+        
+        .user-type-icon i {
+            font-size: 1.5rem;
+        }
+    }
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const userTypeRadios = document.querySelectorAll('.user-type-radio');
+    const nextStepBtn = document.querySelector('.next-step');
+    const prevStepBtn = document.querySelector('.prev-step');
+    const step1 = document.getElementById('step1');
+    const step2 = document.getElementById('step2');
+    const progressBar = document.querySelector('.progress-bar');
+    const steps = document.querySelectorAll('.step');
+
+    userTypeRadios.forEach(radio => {
+        radio.addEventListener('change', function() {
+            nextStepBtn.disabled = false;
+        });
+    });
+
+    nextStepBtn.addEventListener('click', function() {
+        step1.style.display = 'none';
+        step2.style.display = 'block';
+        progressBar.style.width = '50%';
+        steps[1].classList.add('active');
+    });
+
+    prevStepBtn.addEventListener('click', function() {
+        step2.style.display = 'none';
+        step1.style.display = 'block';
+        progressBar.style.width = '0%';
+        steps[1].classList.remove('active');
+    });
+
+    const passwordToggles = document.querySelectorAll('.password-toggle');
+    passwordToggles.forEach(toggle => {
+        toggle.addEventListener('click', function() {
+            const input = this.previousElementSibling;
+            const icon = this.querySelector('i');
+            
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.classList.remove('bi-eye-slash-fill');
+                icon.classList.add('bi-eye-fill');
+            } else {
+                input.type = 'password';
+                icon.classList.remove('bi-eye-fill');
+                icon.classList.add('bi-eye-slash-fill');
+            }
+        });
+    });
+});
+</script>
 {% endblock %} 

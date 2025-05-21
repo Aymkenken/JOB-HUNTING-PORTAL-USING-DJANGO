@@ -1,0 +1,68 @@
+<!-- Company Profile Section -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card profile-card">
+            <div class="card-body p-4">
+                <div class="profile-header">
+                    <div class="profile-image">
+                        {% if user_profile.profile_picture %}
+                            <img src="{{ user_profile.profile_picture.url }}" 
+                                 alt="Profile Picture" 
+                                 class="rounded-circle profile-img">
+                        {% else %}
+                            <div class="profile-placeholder">
+                                <i class="bi bi-building"></i>
+                                <span class="placeholder-text">Add Company Logo</span>
+                            </div>
+                        {% endif %}
+                    </div>
+                    <div class="profile-info">
+                        <h3 class="profile-title">Company Profile</h3>
+                        <div class="profile-details">
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <div class="info-item">
+                                        <i class="bi bi-building"></i>
+                                        <div class="info-content">
+                                            <span class="info-label">Company Name</span>
+                                            <span class="info-value">{{ user_profile.company_name|default:"Add your company name" }}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="info-item">
+                                        <i class="bi bi-person-badge"></i>
+                                        <div class="info-content">
+                                            <span class="info-label">Position</span>
+                                            <span class="info-value">{{ user_profile.position|default:"Add your position" }}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                {% if user.email %}
+                                <div class="col-md-6">
+                                    <div class="info-item">
+                                        <i class="bi bi-envelope"></i>
+                                        <div class="info-content">
+                                            <span class="info-label">Email</span>
+                                            <span class="info-value">{{ user.email }}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                {% endif %}
+                                <div class="col-md-6">
+                                    <div class="info-item">
+                                        <i class="bi bi-telephone"></i>
+                                        <div class="info-content">
+                                            <span class="info-label">Phone</span>
+                                            <span class="info-value">{{ user_profile.phone|default:"Add your phone number" }}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div> 

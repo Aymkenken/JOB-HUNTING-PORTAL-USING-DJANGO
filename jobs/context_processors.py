@@ -3,9 +3,8 @@ from .models import UserProfile
 def theme_context(request):
     if request.user.is_authenticated:
         try:
-            user_profile = UserProfile.objects.get(user=request.user)
-            theme = user_profile.theme
-        except UserProfile.DoesNotExist:
+            theme = request.user.userprofile.theme
+        except:
             theme = 'light'
     else:
         theme = 'light'
