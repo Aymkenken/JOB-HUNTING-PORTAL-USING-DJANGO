@@ -1,0 +1,378 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Analytics Dashboard - JobPoint Surigao{% endblock %}
+
+{% block extra_css %}
+<style>
+    :root {
+        --primary-color: #4e73df;
+        --primary-dark: #224abe;
+        --text-primary: #2d3748;
+        --text-secondary: #4a5568;
+        --border-color: #e2e8f0;
+    }
+
+    .analytics-container {
+        padding: 2rem 0;
+        color: var(--text-primary);
+    }
+
+    .analytics-header {
+        background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+        border-radius: 1.5rem;
+        padding: 2.5rem;
+        color: white;
+        margin-bottom: 2rem;
+        box-shadow: 0 4px 20px rgba(78, 115, 223, 0.15);
+    }
+
+    .analytics-header h1 {
+        color: white;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+    }
+
+    .analytics-header p {
+        color: rgba(255, 255, 255, 0.9);
+        font-size: 1.1rem;
+    }
+
+    .stat-card {
+        background: white;
+        border-radius: 1rem;
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+        transition: all 0.3s ease;
+    }
+
+    .stat-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+    }
+
+    .stat-value {
+        font-size: 2.5rem;
+        font-weight: 700;
+        color: var(--primary-color);
+        margin-bottom: 0.5rem;
+    }
+
+    .stat-label {
+        color: var(--text-secondary);
+        font-size: 1rem;
+        font-weight: 500;
+    }
+
+    .chart-container {
+        background: white;
+        border-radius: 1rem;
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+        height: 400px;
+    }
+
+    .chart-title {
+        color: var(--text-primary);
+        font-size: 1.25rem;
+        font-weight: 600;
+        margin-bottom: 1.5rem;
+    }
+
+    .date-range-selector {
+        display: flex;
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .date-range-selector select {
+        padding: 0.5rem 1rem;
+        border: 1px solid var(--border-color);
+        border-radius: 0.5rem;
+        background: white;
+        color: var(--text-primary);
+        font-weight: 500;
+    }
+
+    .top-jobs-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    .top-jobs-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 1rem;
+        border-bottom: 1px solid var(--border-color);
+        transition: background-color 0.2s ease;
+    }
+
+    .top-jobs-item:hover {
+        background-color: rgba(78, 115, 223, 0.05);
+    }
+
+    .top-jobs-item:last-child {
+        border-bottom: none;
+    }
+
+    .job-title {
+        color: var(--text-primary);
+        font-weight: 500;
+        font-size: 1.1rem;
+    }
+
+    .application-count {
+        background: var(--primary-color);
+        color: white;
+        padding: 0.25rem 0.75rem;
+        border-radius: 1rem;
+        font-size: 0.875rem;
+        font-weight: 500;
+    }
+
+    /* Chart.js Customization */
+    .chart-container canvas {
+        max-height: 300px;
+    }
+
+    /* Responsive Adjustments */
+    @media (max-width: 768px) {
+        .analytics-container {
+            padding: 1rem 0;
+        }
+
+        .analytics-header {
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .analytics-header h1 {
+            font-size: 1.5rem;
+        }
+
+        .analytics-header p {
+            font-size: 1rem;
+        }
+
+        .stat-card {
+            padding: 1rem;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+        }
+
+        .chart-container {
+            height: 300px;
+            padding: 1rem;
+        }
+
+        .chart-title {
+            font-size: 1.1rem;
+            margin-bottom: 1rem;
+        }
+
+        .job-title {
+            font-size: 1rem;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="analytics-container">
+    <div class="container-fluid">
+        <div class="analytics-header">
+            <h1>Analytics Dashboard</h1>
+            <p>Track your job posting performance and applicant statistics</p>
+        </div>
+
+        <!-- Quick Stats -->
+        <div class="row mb-4">
+            <div class="col-md-4">
+                <div class="stat-card">
+                    <div class="stat-value">{{ total_jobs }}</div>
+                    <div class="stat-label">Total Jobs Posted</div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="stat-card">
+                    <div class="stat-value">{{ total_applications }}</div>
+                    <div class="stat-label">Total Applications</div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="stat-card">
+                    <div class="stat-value">{{ active_jobs }}</div>
+                    <div class="stat-label">Active Jobs</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Charts Row -->
+        <div class="row mb-4">
+            <div class="col-md-6">
+                <div class="chart-container">
+                    <h3 class="chart-title">Application Status Distribution</h3>
+                    <canvas id="statusChart"></canvas>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="chart-container">
+                    <h3 class="chart-title">Applications Over Time</h3>
+                    <div class="date-range-selector">
+                        <select id="timeRange" class="form-select">
+                            <option value="7">Last 7 days</option>
+                            <option value="30" selected>Last 30 days</option>
+                            <option value="90">Last 90 days</option>
+                        </select>
+                    </div>
+                    <canvas id="timeChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Top Jobs -->
+        <div class="row">
+            <div class="col-12">
+                <div class="chart-container">
+                    <h3 class="chart-title">Top Jobs by Applications</h3>
+                    <ul class="top-jobs-list">
+                        {% for job in top_jobs %}
+                        <li class="top-jobs-item">
+                            <span class="job-title">{{ job.title }}</span>
+                            <span class="application-count">{{ job.application_count }} applications</span>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Status Distribution Chart
+    const statusCtx = document.getElementById('statusChart').getContext('2d');
+    const statusData = {{ status_distribution|safe }};
+    
+    new Chart(statusCtx, {
+        type: 'doughnut',
+        data: {
+            labels: statusData.map(item => {
+                const statusMap = {
+                    'pending': 'Pending',
+                    'reviewing': 'Reviewing',
+                    'shortlisted': 'Shortlisted',
+                    'interviewed': 'Interviewed',
+                    'offered': 'Offered',
+                    'hired': 'Hired',
+                    'rejected': 'Rejected'
+                };
+                return statusMap[item.status] || item.status;
+            }),
+            datasets: [{
+                data: statusData.map(item => item.count),
+                backgroundColor: [
+                    '#4e73df',  // Primary
+                    '#1cc88a',  // Success
+                    '#36b9cc',  // Info
+                    '#f6c23e',  // Warning
+                    '#e74a3b',  // Danger
+                    '#858796',  // Secondary
+                    '#5a5c69'   // Dark
+                ]
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'right',
+                    labels: {
+                        color: '#2d3748',
+                        font: {
+                            size: 12
+                        }
+                    }
+                }
+            }
+        }
+    });
+
+    // Applications Over Time Chart
+    const timeCtx = document.getElementById('timeChart').getContext('2d');
+    const timeData = {{ applications_over_time|safe }};
+    
+    new Chart(timeCtx, {
+        type: 'line',
+        data: {
+            labels: timeData.map(item => new Date(item.application_date).toLocaleDateString()),
+            datasets: [{
+                label: 'Applications',
+                data: timeData.map(item => item.count),
+                borderColor: '#4e73df',
+                backgroundColor: 'rgba(78, 115, 223, 0.1)',
+                fill: true,
+                tension: 0.4
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    display: false
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        stepSize: 1,
+                        color: '#2d3748'
+                    },
+                    grid: {
+                        color: 'rgba(0, 0, 0, 0.1)'
+                    }
+                },
+                x: {
+                    ticks: {
+                        color: '#2d3748'
+                    },
+                    grid: {
+                        color: 'rgba(0, 0, 0, 0.1)'
+                    }
+                }
+            }
+        }
+    });
+
+    // Time Range Selector
+    document.getElementById('timeRange').addEventListener('change', function() {
+        const days = this.value;
+        fetch(`/employer/analytics/data/?days=${days}`)
+            .then(response => response.json())
+            .then(data => {
+                // Update time chart data
+                timeChart.data.labels = data.applications_over_time.map(
+                    item => new Date(item.application_date).toLocaleDateString()
+                );
+                timeChart.data.datasets[0].data = data.applications_over_time.map(
+                    item => item.count
+                );
+                timeChart.update();
+            });
+    });
+});
+</script>
+{% endblock %} 

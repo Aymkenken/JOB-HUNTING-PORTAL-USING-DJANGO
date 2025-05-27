@@ -182,6 +182,19 @@ class JobForm(forms.ModelForm):
         help_text='Select the type of employment'
     )
 
+    # Contact Information
+    contact_email = forms.EmailField(
+        required=True,
+        help_text='Enter the contact email for job inquiries',
+        widget=forms.EmailInput(attrs={'placeholder': 'e.g., contact@company.com'})
+    )
+    contact_number = forms.CharField(
+        max_length=20,
+        required=True,
+        help_text='Enter the contact number for job inquiries',
+        widget=forms.TextInput(attrs={'placeholder': 'e.g., +63 912 345 6789'})
+    )
+
     # Salary fields
     CURRENCY_CHOICES = [
         ('₱', 'Philippine Peso (₱)'),
@@ -292,7 +305,8 @@ class JobForm(forms.ModelForm):
     class Meta:
         model = Job
         fields = ('title', 'company_name', 'job_type', 'description', 'requirements', 'currency', 'min_salary', 'max_salary', 
-                 'work_days', 'work_start_time', 'work_end_time', 'deadline', 'country', 'province', 'city', 'barangay')
+                 'work_days', 'work_start_time', 'work_end_time', 'deadline', 'country', 'province', 'city', 'barangay',
+                 'contact_email', 'contact_number')
         widgets = {
             'description': forms.Textarea(attrs={'rows': 4}),
             'requirements': forms.Textarea(attrs={'rows': 4}),

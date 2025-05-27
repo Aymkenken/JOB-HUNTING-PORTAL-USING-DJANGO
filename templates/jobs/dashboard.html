@@ -888,7 +888,7 @@
         <!-- Welcome Section -->
         <div class="row mb-4">
             <div class="col-12">
-                <div class="dashboard-header">
+    <div class="dashboard-header">
                     <div class="header-pattern"></div>
                     <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center">
                         <div class="header-content mb-3 mb-md-0">
@@ -923,14 +923,22 @@
                                 <i class="bi bi-plus-circle"></i>Post a Job
                                 <span class="tooltip-text">Create a new job posting</span>
                             </a>
+                            <a href="{% url 'employer_applications' %}" class="btn btn-info tooltip-custom">
+                                <i class="bi bi-people"></i>View Applications
+                                <span class="tooltip-text">Manage all job applications</span>
+                            </a>
+                            <a href="{% url 'employer_analytics' %}" class="btn btn-warning tooltip-custom">
+                                <i class="bi bi-graph-up"></i>Analytics
+                                <span class="tooltip-text">View job posting analytics</span>
+                            </a>
                             {% endif %}
                             <a href="{% url 'job_list' %}" class="btn btn-primary tooltip-custom">
                                 <i class="bi bi-search"></i>Find Jobs
                                 <span class="tooltip-text">Browse available jobs</span>
                             </a>
-                        </div>
-                    </div>
-                </div>
+    </div>
+            </div>
+        </div>
             </div>
         </div>
 
@@ -941,10 +949,10 @@
                 <div class="stat-card card-hover-effect">
                     <div class="stat-icon">
                         <i class="bi {{ stat.icon }}"></i>
-                    </div>
+            </div>
                     <div class="stat-value">{{ stat.value }}</div>
                     <div class="stat-label">{{ stat.label }}</div>
-                </div>
+        </div>
             </div>
             {% endfor %}
         </div>
@@ -962,7 +970,7 @@
                             <a href="{% url 'job_list' %}" class="btn btn-sm btn-outline-primary">
                                 <i class="bi bi-search"></i>Find More Jobs
                             </a>
-                        </div>
+    </div>
                 </div>
                     <div class="card-body">
                         {% if applications %}
@@ -972,7 +980,7 @@
                             <tr>
                                 <th>Job Title</th>
                                             <th>Company</th>
-                                            <th>Applied Date</th>
+                                <th>Applied Date</th>
                                 <th>Status</th>
                                 <th>Action</th>
                             </tr>
@@ -990,7 +998,7 @@
                                 <td>
                                                     <span class="status-badge {% if application.status == 'pending' %}active{% elif application.status == 'rejected' %}closed{% else %}active{% endif %}">
                                                         <i class="bi {% if application.status == 'pending' %}bi-clock{% elif application.status == 'rejected' %}bi-x-circle{% else %}bi-check-circle{% endif %}"></i>
-                                                        {{ application.get_status_display }}
+                                        {{ application.get_status_display }}
                                     </span>
                                 </td>
                                 <td>
@@ -1002,7 +1010,7 @@
                             {% endfor %}
                         </tbody>
                     </table>
-                            </div>
+                </div>
                         {% else %}
                             <div class="empty-state">
                                 <i class="bi bi-inbox"></i>
@@ -1010,9 +1018,9 @@
                                 <a href="{% url 'job_list' %}" class="btn btn-primary">
                                     <i class="bi bi-search"></i>Find Jobs
                                 </a>
-                            </div>
+            </div>
                         {% endif %}
-                    </div>
+                </div>
                 </div>
             </div>
         </div>
@@ -1037,7 +1045,7 @@
                             <div class="row">
                                 {% for job in posted_jobs %}
                                     <div class="col-md-6 mb-4">
-                                        <div class="job-card">
+                                        <div class="job-card" data-job-id="{{ job.id }}">
                                             <h5 class="job-title">{{ job.title }}</h5>
                                             <p class="job-company">{{ job.company.get_full_name }}</p>
                                             <div class="job-details">
@@ -1091,12 +1099,9 @@
                                                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
                                                                 <i class="bi bi-x-circle me-2"></i>Cancel
                                                             </button>
-                                                            <form action="{% url 'delete_job' job.id %}" method="post" class="d-inline">
-                                                                {% csrf_token %}
-                                                                <button type="submit" class="btn btn-danger">
-                                                                    <i class="bi bi-trash me-2"></i>Delete Job
-                                                                </button>
-                                                            </form>
+                                                            <button type="button" class="btn btn-danger" onclick="deleteJob({{ job.id }})">
+                                                                <i class="bi bi-trash me-2"></i>Delete Job
+                                                            </button>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -1121,6 +1126,27 @@
         </div>
     </div>
 </div>
+
+<!-- Toast Messages -->
+<div class="position-fixed bottom-0 end-0 p-3" style="z-index: 11">
+    <div id="successToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="toast-header bg-success text-white">
+            <i class="bi bi-check-circle me-2"></i>
+            <strong class="me-auto">Success</strong>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+        <div class="toast-body" id="toastMessage"></div>
+    </div>
+    
+    <div id="errorToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="toast-header bg-danger text-white">
+            <i class="bi bi-exclamation-circle me-2"></i>
+            <strong class="me-auto">Error</strong>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+        <div class="toast-body" id="errorToastMessage"></div>
+    </div>
+</div>
 {% endblock %}
 
 {% block extra_js %}
@@ -1140,5 +1166,43 @@
 
     // Update stats every 5 minutes
     setInterval(updateStats, 300000);
+</script>
+
+<script>
+function deleteJob(jobId) {
+    const modal = document.getElementById(`deleteModal${jobId}`);
+    const modalInstance = bootstrap.Modal.getInstance(modal);
+    
+    fetch(`/jobs/delete/${jobId}/`, {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+            'X-Requested-With': 'XMLHttpRequest'
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.status === 'success') {
+            // Remove the job card from the DOM
+            const jobCard = document.querySelector(`[data-job-id="${jobId}"]`);
+            if (jobCard) {
+                jobCard.remove();
+            }
+            // Close the modal
+            modalInstance.hide();
+            // Show success message
+            const toast = new bootstrap.Toast(document.getElementById('successToast'));
+            document.getElementById('toastMessage').textContent = 'Job deleted successfully!';
+            toast.show();
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        // Show error message
+        const toast = new bootstrap.Toast(document.getElementById('errorToast'));
+        document.getElementById('errorToastMessage').textContent = 'Error deleting job. Please try again.';
+        toast.show();
+    });
+}
 </script>
 {% endblock %} 

@@ -1,0 +1,178 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Manage Applications - JobPoint Surigao{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <h1 class="mb-4">Manage Applications</h1>
+    
+    <!-- Filters -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <form method="get" class="row g-3">
+                <div class="col-md-4">
+                    <label for="job" class="form-label">Filter by Job</label>
+                    <select name="job" id="job" class="form-select">
+                        <option value="">All Jobs</option>
+                        {% for job in jobs %}
+                        <option value="{{ job.id }}" {% if current_job == job.id|stringformat:"i" %}selected{% endif %}>
+                            {{ job.title }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                
+                <div class="col-md-4">
+                    <label for="status" class="form-label">Filter by Status</label>
+                    <select name="status" id="status" class="form-select">
+                        <option value="">All Statuses</option>
+                        {% for status_value, status_label in status_choices %}
+                        <option value="{{ status_value }}" {% if current_status == status_value %}selected{% endif %}>
+                            {{ status_label }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                
+                <div class="col-md-4">
+                    <label for="sort" class="form-label">Sort By</label>
+                    <select name="sort" id="sort" class="form-select">
+                        <option value="-application_date" {% if current_sort == '-application_date' %}selected{% endif %}>
+                            Newest First
+                        </option>
+                        <option value="application_date" {% if current_sort == 'application_date' %}selected{% endif %}>
+                            Oldest First
+                        </option>
+                        <option value="status" {% if current_sort == 'status' %}selected{% endif %}>
+                            Status (A-Z)
+                        </option>
+                        <option value="-status" {% if current_sort == '-status' %}selected{% endif %}>
+                            Status (Z-A)
+                        </option>
+                    </select>
+                </div>
+                
+                <div class="col-12">
+                    <button type="submit" class="btn btn-primary">Apply Filters</button>
+                    <a href="{% url 'employer_applications' %}" class="btn btn-secondary">Reset Filters</a>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Applications List -->
+    <div class="card">
+        <div class="card-body">
+            {% if applications %}
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Applicant</th>
+                                <th>Job Title</th>
+                                <th>Applied Date</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for application in applications %}
+                            <tr>
+                                <td>
+                                    <a href="{% url 'view_application' application.id %}" class="text-decoration-none">
+                                        {{ application.applicant.get_full_name|default:application.applicant.username }}
+                                    </a>
+                                </td>
+                                <td>{{ application.job.title }}</td>
+                                <td>{{ application.application_date|date:"M d, Y" }}</td>
+                                <td>
+                                    <span class="badge {% if application.status == 'accepted' %}bg-success
+                                                      {% elif application.status == 'rejected' %}bg-danger
+                                                      {% elif application.status == 'reviewing' %}bg-warning
+                                                      {% else %}bg-secondary{% endif %}">
+                                        {{ application.get_status_display }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <div class="btn-group">
+                                        <a href="{% url 'view_application' application.id %}" 
+                                           class="btn btn-sm btn-outline-primary">
+                                            View Details
+                                        </a>
+                                        <button type="button" 
+                                                class="btn btn-sm btn-outline-secondary dropdown-toggle" 
+                                                data-bs-toggle="dropdown">
+                                            Update Status
+                                        </button>
+                                        <ul class="dropdown-menu">
+                                            <li>
+                                                <form method="post" action="{% url 'update_application_status' application.id %}">
+                                                    {% csrf_token %}
+                                                    <input type="hidden" name="status" value="reviewing">
+                                                    <button type="submit" class="dropdown-item">Mark as Reviewing</button>
+                                                </form>
+                                            </li>
+                                            <li>
+                                                <form method="post" action="{% url 'update_application_status' application.id %}">
+                                                    {% csrf_token %}
+                                                    <input type="hidden" name="status" value="accepted">
+                                                    <button type="submit" class="dropdown-item">Accept</button>
+                                                </form>
+                                            </li>
+                                            <li>
+                                                <form method="post" action="{% url 'update_application_status' application.id %}">
+                                                    {% csrf_token %}
+                                                    <input type="hidden" name="status" value="rejected">
+                                                    <button type="submit" class="dropdown-item">Reject</button>
+                                                </form>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                
+                <!-- Pagination -->
+                {% if applications.has_other_pages %}
+                <nav aria-label="Page navigation" class="mt-4">
+                    <ul class="pagination justify-content-center">
+                        {% if applications.has_previous %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ applications.previous_page_number }}{% if current_status %}&status={{ current_status }}{% endif %}{% if current_job %}&job={{ current_job }}{% endif %}{% if current_sort %}&sort={{ current_sort }}{% endif %}">
+                                Previous
+                            </a>
+                        </li>
+                        {% endif %}
+                        
+                        {% for num in applications.paginator.page_range %}
+                        <li class="page-item {% if applications.number == num %}active{% endif %}">
+                            <a class="page-link" href="?page={{ num }}{% if current_status %}&status={{ current_status }}{% endif %}{% if current_job %}&job={{ current_job }}{% endif %}{% if current_sort %}&sort={{ current_sort }}{% endif %}">
+                                {{ num }}
+                            </a>
+                        </li>
+                        {% endfor %}
+                        
+                        {% if applications.has_next %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ applications.next_page_number }}{% if current_status %}&status={{ current_status }}{% endif %}{% if current_job %}&job={{ current_job }}{% endif %}{% if current_sort %}&sort={{ current_sort }}{% endif %}">
+                                Next
+                            </a>
+                        </li>
+                        {% endif %}
+                    </ul>
+                </nav>
+                {% endif %}
+                
+            {% else %}
+                <div class="text-center py-4">
+                    <p class="mb-0">No applications found.</p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %} 

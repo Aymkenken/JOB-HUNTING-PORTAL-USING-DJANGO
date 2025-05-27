@@ -55,4 +55,7 @@ urlpatterns = [
     path('jobs/applications/<int:job_id>/', views.job_applications, name='job_applications'),
     path('jobs/application/<int:application_id>/', views.view_application, name='view_application'),
     path('jobs/application/<int:application_id>/update-status/', views.update_application_status, name='update_application_status'),
+    path('employer/applications/', views.employer_applications, name='employer_applications'),
+    path('employer/analytics/', views.employer_analytics, name='employer_analytics'),
+    path('employer/analytics/data/', views.employer_analytics_data, name='employer_analytics_data'),
 ] 

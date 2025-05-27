@@ -216,6 +216,8 @@ class Job(models.Model):
     is_active = models.BooleanField(default=True)
     views_count = models.PositiveIntegerField(default=0)
     applications_count = models.PositiveIntegerField(default=0)
+    contact_email = models.EmailField(max_length=254, help_text='Contact email for job inquiries', null=True, blank=True)
+    contact_number = models.CharField(max_length=20, help_text='Contact number for job inquiries', null=True, blank=True)
 
     class Meta:
         ordering = ['-posted_date']

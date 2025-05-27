@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import login, logout, authenticate
 from django.contrib import messages
-from django.db.models import Q, Sum
+from django.db.models import Q, Sum, Count
 from django.core.paginator import Paginator
 from django.http import JsonResponse, HttpResponseNotAllowed, HttpResponse, HttpResponseForbidden
 from django.views.decorators.http import require_http_methods, require_POST, require_GET
@@ -20,6 +20,7 @@ import os
 from django.contrib.auth.hashers import make_password
 from django.contrib.auth import update_session_auth_hash
 import json
+from datetime import datetime, timedelta
 
 @require_http_methods(["GET", "POST"])
 def home(request):
@@ -304,6 +305,9 @@ def post_job(request):
             try:
                 job = form.save(commit=False)
                 job.company = request.user
+                # Set contact information from form data
+                job.contact_email = form.cleaned_data.get('contact_email')
+                job.contact_number = form.cleaned_data.get('contact_number')
                 job.save()
                 messages.success(request, 'Job posted successfully!')
                 return redirect('dashboard')
@@ -403,7 +407,11 @@ def edit_job(request, job_id):
     if request.method == 'POST':
         form = JobForm(request.POST, instance=job)
         if form.is_valid():
-            form.save()
+            job = form.save(commit=False)
+            # Update contact information
+            job.contact_email = form.cleaned_data.get('contact_email')
+            job.contact_number = form.cleaned_data.get('contact_number')
+            job.save()
             messages.success(request, 'Job updated successfully!')
             return redirect('dashboard')
     else:
@@ -424,6 +432,9 @@ def delete_job(request, job_id):
     
     job.delete()
     messages.success(request, 'Job deleted successfully!')
+    
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        return JsonResponse({'status': 'success'})
     return redirect('dashboard')
 
 @login_required
@@ -812,3 +823,134 @@ def dashboard_stats(request):
         return JsonResponse({
             'error': str(e)
         }, status=500)
+
+@login_required
+def employer_applications(request):
+    """View for employers to manage all applications across their jobs."""
+    if request.user.userprofile.user_type != 'employer':
+        return HttpResponseForbidden("Only employers can access this page.")
+    
+    # Get all jobs posted by the employer
+    jobs = Job.objects.filter(company=request.user)
+    
+    # Get all applications for these jobs
+    applications = JobApplication.objects.filter(job__in=jobs)
+    
+    # Filter by status if provided
+    status = request.GET.get('status')
+    if status and status in dict(JobApplication.STATUS_CHOICES):
+        applications = applications.filter(status=status)
+    
+    # Filter by job if provided
+    job_id = request.GET.get('job')
+    if job_id:
+        applications = applications.filter(job_id=job_id)
+    
+    # Sort applications
+    sort_by = request.GET.get('sort', '-application_date')
+    if sort_by in ['application_date', '-application_date', 'status', '-status']:
+        applications = applications.order_by(sort_by)
+    
+    # Paginate results
+    paginator = Paginator(applications, 10)  # Show 10 applications per page
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+    
+    context = {
+        'applications': page_obj,
+        'jobs': jobs,
+        'status_choices': JobApplication.STATUS_CHOICES,
+        'current_status': status,
+        'current_job': job_id,
+        'current_sort': sort_by,
+    }
+    
+    return render(request, 'jobs/employer_applications.html', context)
+
+@login_required
+def employer_analytics(request):
+    if request.user.userprofile.user_type != 'employer':
+        return HttpResponseForbidden("Access denied")
+    
+    # Get date range from request or default to last 30 days
+    end_date = datetime.now()
+    start_date = end_date - timedelta(days=30)
+    
+    # Get all jobs posted by the employer
+    jobs = Job.objects.filter(company=request.user)
+    
+    # Get all applications for these jobs
+    applications = JobApplication.objects.filter(job__in=jobs)
+    
+    # Calculate basic statistics
+    total_jobs = jobs.count()
+    total_applications = applications.count()
+    active_jobs = jobs.filter(is_active=True).count()
+    
+    # Calculate application status distribution
+    status_distribution = applications.values('status').annotate(
+        count=Count('id')
+    ).order_by('status')
+    
+    # Calculate applications over time (last 30 days)
+    applications_over_time = applications.filter(
+        application_date__gte=start_date
+    ).values('application_date').annotate(
+        count=Count('id')
+    ).order_by('application_date')
+    
+    # Calculate top jobs by number of applications
+    top_jobs = jobs.annotate(
+        application_count=Count('applications')
+    ).order_by('-application_count')[:5]
+    
+    context = {
+        'total_jobs': total_jobs,
+        'total_applications': total_applications,
+        'active_jobs': active_jobs,
+        'status_distribution': status_distribution,
+        'applications_over_time': list(applications_over_time),
+        'top_jobs': top_jobs,
+        'start_date': start_date.strftime('%Y-%m-%d'),
+        'end_date': end_date.strftime('%Y-%m-%d'),
+    }
+    
+    return render(request, 'jobs/employer_analytics.html', context)
+
+@login_required
+def employer_analytics_data(request):
+    if request.user.userprofile.user_type != 'employer':
+        return JsonResponse({'error': 'Access denied'}, status=403)
+    
+    # Get date range from request
+    end_date = datetime.now()
+    start_date = end_date - timedelta(days=30)
+    
+    # Get all jobs posted by the employer
+    jobs = Job.objects.filter(company=request.user)
+    
+    # Get all applications for these jobs
+    applications = JobApplication.objects.filter(job__in=jobs)
+    
+    # Calculate application status distribution
+    status_distribution = list(applications.values('status').annotate(
+        count=Count('id')
+    ).order_by('status'))
+    
+    # Calculate applications over time
+    applications_over_time = list(applications.filter(
+        application_date__gte=start_date
+    ).values('application_date').annotate(
+        count=Count('id')
+    ).order_by('application_date'))
+    
+    # Calculate top jobs by number of applications
+    top_jobs = list(jobs.annotate(
+        application_count=Count('applications')
+    ).order_by('-application_count')[:5].values('title', 'application_count'))
+    
+    return JsonResponse({
+        'status_distribution': status_distribution,
+        'applications_over_time': applications_over_time,
+        'top_jobs': top_jobs,
+    })
